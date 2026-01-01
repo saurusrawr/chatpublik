@@ -1,0 +1,3 @@
+body { font-family: Arial; background:#ece5dd; padding:10px }
+#chat { background:white; height:300px; overflow:auto; padding:10px }
+input,button { padding:8px; margin:5px }
