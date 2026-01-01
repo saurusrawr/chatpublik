@@ -3,45 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Room Global - Saurus</title>
+  <title>Chat Room - By Saurus</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #7B2CBF;
+      --accent: #9D4EDD;
+      --light: #E0AAFF;
+      --bg: linear-gradient(135deg, #240046 0%, #3C096C 50%, #7B2CBF 100%);
+      --owner: #FFD700;
+    }
+
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: system-ui, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); color:#fff; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
-    .screen { position:absolute; inset:0; display:flex; flex-direction:column; transition:opacity .4s; }
-    .screen.hidden { opacity:0; pointer-events:none; }
-    .box { background:rgba(255,255,255,.15); backdrop-filter:blur(10px); padding:40px; border-radius:20px; max-width:400px; margin:auto; text-align:center; }
-    input, button { width:100%; padding:14px; margin:12px 0; border:none; border-radius:10px; font-size:1.1rem; }
-    button { background:#4ade80; color:#fff; cursor:pointer; }
-    .header { background:rgba(0,0,0,.4); padding:16px; display:flex; justify-content:space-between; align-items:center; }
-    #daftar-room { padding:20px; overflow-y:auto; flex:1; }
-    .room-item { background:rgba(255,255,255,.1); padding:16px; margin:10px 0; border-radius:12px; cursor:pointer; }
-    .room-item:hover { background:rgba(255,255,255,.2); }
-    #pesan-container { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:12px; }
-    .pesan { max-width:75%; padding:10px 14px; border-radius:18px; position:relative; }
-    .pesan.kirim { background:#4ade80; color:black; align-self:flex-end; }
-    .pesan.terima { background:rgba(255,255,255,.2); align-self:flex-start; }
-    .pesan .pengirim { font-size:.8rem; opacity:.7; display:block; margin-bottom:4px; }
-    .pesan img { max-width:100%; border-radius:10px; margin-top:6px; }
-    .pesan audio { margin-top:6px; width:100%; max-width:280px; }
-    .owner-badge { background:#ff6b6b; color:white; font-size:0.7rem; padding:2px 8px; border-radius:12px; margin-left:8px; }
-    .input-area { background:rgba(0,0,0,.4); padding:12px; display:flex; gap:10px; position:sticky; bottom:0; }
-    #input-pesan { flex:1; border-radius:24px; background:rgba(255,255,255,.25); color:#fff; padding:12px; border:none; }
-    #kirim, .attach, #rekam { width:48px; height:48px; border-radius:50%; border:none; background:#4ade80; color:#fff; font-size:1.3rem; cursor:pointer; }
-    .attach { background:#6b7280; display:grid; place-items:center; }
-    .rekam-ui { position:fixed; bottom:70px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.7); padding:12px 24px; border-radius:30px; display:flex; gap:16px; }
-    .hidden { display:none !important; }
+    body { 
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--light);
+      min-height: 100vh;
+      background-attachment: fixed;
+      overflow: hidden;
+    }
+
+    .screen { 
+      position: absolute; inset: 0; 
+      display: flex; flex-direction: column; 
+      transition: opacity .5s ease; 
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    .box { 
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(15px);
+      padding: 50px 40px;
+      border-radius: 25px;
+      max-width: 480px;
+      width: 90%;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    }
+
+    h1 { font-size: 3.2rem; margin-bottom: 20px; background: linear-gradient(90deg, var(--light), white); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    input { width: 100%; padding: 16px; margin: 15px 0; border: 2px solid var(--primary); border-radius: 15px; font-size: 1.2rem; background: rgba(255,255,255,0.08); color: white; }
+    button { background: var(--accent); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; }
+    button:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(157,78,221,0.6); }
+
+    .header { 
+      background: rgba(0,0,0,0.45);
+      padding: 18px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    #daftar-room { padding: 25px; overflow-y: auto; flex: 1; }
+    .room-item { 
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 18px;
+      cursor: pointer;
+      transition: all .3s;
+    }
+    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(123,44,191,0.4); }
+    .delete-btn { background: #ff4757; font-size: 0.9rem; padding: 8px 16px; margin-top: 10px; }
+
+    #pesan-container { 
+      flex: 1;
+      overflow-y: auto;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pesan { 
+      max-width: 80%;
+      padding: 12px 18px;
+      border-radius: 20px;
+      position: relative;
+    }
+    .pesan.kirim { background: var(--primary); align-self: flex-end; }
+    .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
+    .pesan .pengirim { font-size: 0.9rem; opacity: 0.8; display: block; margin-bottom: 6px; }
+    .pesan img { max-width: 100%; border-radius: 14px; margin-top: 8px; }
+    .pesan audio { margin-top: 8px; width: 100%; max-width: 320px; }
+    .owner-badge { 
+      background: var(--owner);
+      color: #000;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 15px;
+      margin-left: 10px;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(255,215,0,0.5);
+    }
+
+    .input-area { 
+      background: rgba(0,0,0,0.5);
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      position: sticky;
+      bottom: 0;
+    }
+    #input-pesan { flex: 1; border-radius: 30px; background: rgba(255,255,255,0.2); color: white; padding: 14px; border: none; }
+    #kirim, .attach, #rekam { 
+      width: 54px; height: 54px; border-radius: 50%; border: none; 
+      background: var(--accent); color: white; font-size: 1.4rem; cursor: pointer; 
+    }
+    .attach { background: var(--primary); display: grid; place-items: center; }
+
+    .rekam-ui { 
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.8); padding: 16px 30px; border-radius: 40px;
+      display: flex; gap: 20px; align-items: center; box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    }
+    .modal { display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.7); position: fixed; inset: 0; z-index: 10; }
+    .modal.hidden { display: none; }
   </style>
 </head>
 <body>
 
 <div id="login" class="screen">
   <div class="box">
-    <h1>Chat Global Saurus</h1>
-    <input type="text" id="nama" placeholder="Nama kamu disini." autofocus>
+    <h1>Chat Room</h1>
+    <p style="margin:15px 0; opacity:0.9;">By Saurus</p>
+    <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
   </div>
 </div>
@@ -52,28 +146,26 @@
     <button onclick="keluar()">Logout</button>
   </div>
   <input type="text" id="cari" placeholder="Cari nama room..." oninput="cariRoom()">
-  <button onclick="tampilBuatRoom()">+ Buat Room Baru</button>
+  <button onclick="tampilBuat()">+ Buat Room Baru</button>
   <div id="daftar-room"></div>
 </div>
 
-<!-- Form Buat Room -->
 <div id="form-buat" class="modal hidden">
   <div class="box">
     <h3>Buat Room Baru</h3>
     <input type="text" id="nama-room" placeholder="Nama Room">
-    <input type="password" id="pw-room" placeholder="Password (kosong = bebas)">
-    <input type="number" id="max-anggota" placeholder="Maks anggota (kosong = tak terbatas)" min="1">
-    <div style="display:flex; gap:10px;">
+    <input type="password" id="pw-room" placeholder="Password (kosong = tanpa)">
+    <input type="number" id="max-anggota" placeholder="Max anggota (kosong = tak terbatas)" min="1">
+    <div style="display:flex; gap:12px; margin-top:20px;">
       <button onclick="buatRoom()">Buat</button>
-      <button onclick="sembunyiBuatRoom()">Batal</button>
+      <button onclick="sembunyiBuat()">Batal</button>
     </div>
   </div>
 </div>
 
-<!-- Chat Room -->
 <div id="chat" class="screen hidden">
   <div class="header">
-    <button onclick="kembaliDashboard()">←</button>
+    <button onclick="kembali()">←</button>
     <h2 id="nama-room-saatini">Room</h2>
   </div>
   <div id="pesan-container"></div>
@@ -83,22 +175,21 @@
     <label class="attach">📷 <input type="file" id="upload-gambar" accept="image/*" hidden></label>
     <button id="rekam">🎤</button>
   </div>
-  <div id="rekam-ui" class="rekam-ui hidden">
+  <div id="rekam-ui" class="hidden">
     <span>Merekam...</span>
     <button id="stop-rekam">Stop</button>
   </div>
 </div>
 
 <script>
-  // === CONFIG FIREBASE KAMU ===
   const firebaseConfig = {
     apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
     authDomain: "saurusproject-6974b.firebaseapp.com",
     databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "saurusproject-6974b",
-    storageBucket: "saurusproject-6974b.firebasestorage.app",
+    storageBucket: "saurusproject-6974b.appspot.com",
     messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // ganti kalau punya appId web
+    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -107,15 +198,21 @@
   const storage = firebase.storage();
 
   let namaUser = '';
+  let isOwner = false;
   let roomSaatIni = null;
   let sedangRekam = false;
   let recorder, chunksAudio = [];
+  let currentListener = null;
 
-  // Login
+  // Login & cek owner mode (rahasia)
   function masuk() {
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
-    
+
+    // Mode owner: cek pola {khusus:namanya}
+    isOwner = namaUser.match(/\{khusus:.*\}/i) !== null;
+    if (isOwner) namaUser = namaUser.replace(/\{khusus:|\}/gi, '').trim(); // bersihkan kode
+
     auth.signInAnonymously().then(() => {
       document.getElementById('login').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
@@ -125,27 +222,38 @@
 
   // Logout
   function keluar() {
-    if (confirm('Yakin logout?')) {
-      auth.signOut().then(() => location.reload());
-    }
+    if (confirm('Yakin logout?')) auth.signOut().then(() => location.reload());
   }
 
   // Tampil daftar room
-  function tampilDaftarRoom(kataCari = '') {
-    const roomRef = db.ref('rooms');
-    roomRef.once('value').then(snapshot => {
+  function tampilDaftarRoom(kata = '') {
+    db.ref('rooms').once('value').then(snapshot => {
       const list = document.getElementById('daftar-room');
       list.innerHTML = '';
       const rooms = snapshot.val() || {};
 
       Object.keys(rooms).forEach(id => {
         const r = rooms[id];
-        if (kataCari && !r.nama.toLowerCase().includes(kataCari.toLowerCase())) return;
+        if (kata && !r.nama.toLowerCase().includes(kata.toLowerCase())) return;
 
         const div = document.createElement('div');
         div.className = 'room-item';
         div.innerHTML = `<strong>${r.nama}</strong><br><small>Max: ${r.max || '∞'}</small>`;
         div.onclick = () => gabungRoom(id, r.password);
+
+        if (isOwner) {
+          const del = document.createElement('button');
+          del.innerText = 'Hapus Room';
+          del.className = 'delete-btn';
+          del.onclick = e => { e.stopPropagation(); if (confirm('Hapus room ini?')) db.ref('rooms/' + id).remove(); };
+          div.appendChild(del);
+
+          const pwBtn = document.createElement('button');
+          pwBtn.innerText = 'Lihat Password';
+          pwBtn.onclick = e => { e.stopPropagation(); alert('Password: ' + (r.password || 'Tidak ada')); };
+          div.appendChild(pwBtn);
+        }
+
         list.appendChild(div);
       });
     });
@@ -155,11 +263,11 @@
     tampilDaftarRoom(document.getElementById('cari').value);
   }
 
-  // Form buat room
-  function tampilBuatRoom() {
+  // Buat room
+  function tampilBuat() {
     document.getElementById('form-buat').classList.remove('hidden');
   }
-  function sembunyiBuatRoom() {
+  function sembunyiBuat() {
     document.getElementById('form-buat').classList.add('hidden');
   }
 
@@ -169,7 +277,7 @@
     const max = parseInt(document.getElementById('max-anggota').value) || null;
 
     if (!nama) return alert('Nama room wajib!');
-    
+
     const id = db.ref('rooms').push().key;
     db.ref('rooms/' + id).set({
       nama,
@@ -178,60 +286,59 @@
       dibuat: firebase.database.ServerValue.TIMESTAMP
     });
 
-    sembunyiBuatRoom();
+    sembunyiBuat();
     tampilDaftarRoom();
   }
 
-  // Gabung room
-  function gabungRoom(id, pwDiperlukan) {
-    if (pwDiperlukan) {
-      const inputPw = prompt('Room ini pakai password. Masukkan:');
-      if (inputPw !== pwDiperlukan) return alert('Password salah!');
+  // Join room
+  function gabungRoom(id, pw) {
+    if (pw) {
+      const input = prompt('Masukkan password room:');
+      if (input !== pw) return alert('Password salah!');
     }
+
+    document.getElementById('pesan-container').innerHTML = '';
+    if (currentListener) currentListener.off();
 
     roomSaatIni = id;
     document.getElementById('dashboard').classList.add('hidden');
     document.getElementById('chat').classList.remove('hidden');
     document.getElementById('nama-room-saatini').textContent = 'Room: ' + id;
 
-    mulaiDengarChat();
+    const ref = db.ref('rooms/' + id + '/pesan');
+    currentListener = ref;
+
+    ref.on('child_added', snapshot => {
+      tambahPesan(snapshot.val());
+    });
   }
 
-  function kembaliDashboard() {
+  function kembali() {
     roomSaatIni = null;
+    if (currentListener) currentListener.off();
     document.getElementById('chat').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     tampilDaftarRoom();
   }
 
-  // Dengar chat real-time
-  function mulaiDengarChat() {
-    const chatRef = db.ref('rooms/' + roomSaatIni + '/pesan');
-    chatRef.on('child_added', snapshot => {
-      const msg = snapshot.val();
-      tambahPesan(msg);
-    });
-  }
-
   function tambahPesan(msg) {
-    const container = document.getElementById('pesan-container');
     const div = document.createElement('div');
     div.className = `pesan ${msg.pengirim === namaUser ? 'kirim' : 'terima'}`;
 
-    let pengirimDisplay = msg.pengirim;
-    if (msg.pengirim.toLowerCase().includes('saurus')) {
-      pengirimDisplay += ' <span class="owner-badge">OWNER</span>';
+    let pengirim = msg.pengirim;
+    if (msg.pengirim.match(/\{khusus:.*\}/i)) {
+      pengirim += ' <span class="owner-badge">OWNER</span>';
     }
 
-    let isi = `<span class="pengirim">${pengirimDisplay} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
+    let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
     
     if (msg.tipe === 'teks') isi += msg.isi;
     else if (msg.tipe === 'gambar') isi += `<img src="${msg.isi}" alt="Gambar">`;
     else if (msg.tipe === 'suara') isi += `<audio controls src="${msg.isi}"></audio>`;
     
     div.innerHTML = isi;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
+    document.getElementById('pesan-container').appendChild(div);
+    document.getElementById('pesan-container').scrollTop = document.getElementById('pesan-container').scrollHeight;
   }
 
   // Kirim teks
@@ -255,8 +362,8 @@
   document.getElementById('upload-gambar').onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
-    const storageRef = storage.ref('gambar/' + Date.now() + '_' + file.name);
-    storageRef.put(file).then(() => storageRef.getDownloadURL()).then(url => {
+    const ref = storage.ref('gambar/' + Date.now() + '_' + file.name);
+    ref.put(file).then(() => ref.getDownloadURL()).then(url => {
       db.ref('rooms/' + roomSaatIni + '/pesan').push({
         pengirim: namaUser,
         tipe: 'gambar',
@@ -277,9 +384,9 @@
       recorder.ondataavailable = e => chunksAudio.push(e.data);
       recorder.onstop = async () => {
         const blob = new Blob(chunksAudio, { type: 'audio/webm' });
-        const storageRef = storage.ref('suara/' + Date.now() + '.webm');
-        await storageRef.put(blob);
-        const url = await storageRef.getDownloadURL();
+        const ref = storage.ref('suara/' + Date.now() + '.webm');
+        await ref.put(blob);
+        const url = await ref.getDownloadURL();
 
         db.ref('rooms/' + roomSaatIni + '/pesan').push({
           pengirim: namaUser,
