@@ -1,22 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Saurus Chat</title>
+  <meta charset="UTF-8">
+  <title>Login • Saurus Chat</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Saurus Chat</h2>
-
-<input id="username" placeholder="Nama kamu">
-<button onclick="login()">Login</button>
-
-<h3>Room</h3>
-<input id="roomName" placeholder="Nama room">
-<input id="roomPass" placeholder="Password (opsional)">
-<button onclick="createRoom()">Buat Room</button>
-
-<ul id="roomList"></ul>
+<div class="container">
+  <h3>Login</h3>
+  <input id="name" placeholder="Nama kamu">
+  <button onclick="login()">Masuk</button>
+</div>
 
 <script type="module" src="app.js"></script>
 </body>
