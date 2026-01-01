@@ -1,47 +1,23 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Sederhana</title>
+  <title>Saurus Chat</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="login-screen" class="screen active">
-  <div class="login-box">
-    <h1>Chat Sederhana</h1>
-    <p>Masukkan nama kamu</p>
-    <input type="text" id="username" placeholder="Nama kamu..." autocomplete="off" autofocus>
-    <button onclick="startChat()">Masuk</button>
-  </div>
-</div>
+<h2>Saurus Chat</h2>
 
-<div id="chat-screen" class="screen">
-  <div class="header">
-    <h2>Chat Room</h2>
-    <span id="my-name"></span>
-  </div>
+<input id="username" placeholder="Nama kamu">
+<button onclick="login()">Login</button>
 
-  <div id="chat-container"></div>
+<h3>Room</h3>
+<input id="roomName" placeholder="Nama room">
+<input id="roomPass" placeholder="Password (opsional)">
+<button onclick="createRoom()">Buat Room</button>
 
-  <div class="input-area">
-    <input type="text" id="message-input" placeholder="Ketik pesan..." autocomplete="off">
-    <button id="send-btn">➤</button>
-    <label class="attach-btn">
-      📷
-      <input type="file" id="image-input" accept="image/*" hidden>
-    </label>
-    <button id="voice-btn">🎤</button>
-  </div>
+<ul id="roomList"></ul>
 
-  <!-- Voice recording UI -->
-  <div id="voice-recording" class="voice-recording hidden">
-    <span>Sedang merekam...</span>
-    <button id="stop-voice">Stop & Kirim</button>
-  </div>
-</div>
-
-<script src="script.js"></script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
