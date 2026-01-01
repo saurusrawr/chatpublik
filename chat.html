@@ -1,16 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Chat Room</title>
+  <meta charset="UTF-8">
+  <title>Chat Room • Saurus Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h3 id="roomTitle"></h3>
-<div id="chat"></div>
+<div class="container">
 
-<input id="msg" placeholder="Tulis pesan">
-<button onclick="sendMsg()">Kirim</button>
+  <!-- HEADER -->
+  <h3 id="roomTitle">Room</h3>
+
+  <!-- CHAT AREA -->
+  <div id="chat"></div>
+
+  <!-- INPUT -->
+  <div style="display:flex; gap:6px; margin-top:10px;">
+    <input id="msg" placeholder="Tulis pesan..." style="flex:1">
+    <button onclick="sendMsg()" style="width:90px">Kirim</button>
+  </div>
+
+</div>
 
 <script type="module" src="app.js"></script>
 </body>
