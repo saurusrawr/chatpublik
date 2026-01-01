@@ -1,61 +1,102 @@
 import { db } from "./firebase.js";
 import {
-  ref, push, set, onValue
+  ref,
+  push,
+  set,
+  onValue
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const qs = new URLSearchParams(location.search);
 const room = qs.get("room");
 
+function getUsername() {
+  return localStorage.getItem("username");
+}
+
+function formatName(name) {
+  if (name.startsWith("{khusus:") && name.endsWith("}")) {
+    const realName = name
+      .replace("{khusus:", "")
+      .replace("}", "");
+    return `${realName} <span class="owner">👑 OWNER</span>`;
+  }
+  return name;
+}
+
+/* LOGIN */
 window.login = () => {
-  const name = document.getElementById("username").value;
-  if (!name) return alert("Isi nama");
+  const name = document.getElementById("name").value.trim();
+  if (!name) return alert("Isi nama dulu");
   localStorage.setItem("username", name);
-  loadRooms();
+  location.href = "dashboard.html";
 };
 
+/* CREATE ROOM */
 window.createRoom = () => {
-  const roomName = document.getElementById("roomName").value;
-  const roomPass = document.getElementById("roomPass").value;
-  if (!roomName) return alert("Isi nama room");
+  const roomName = document.getElementById("roomName").value.trim();
+  const roomPass = document.getElementById("roomPass").value.trim();
+
+  if (!roomName) return alert("Nama room wajib");
 
   set(ref(db, "rooms/" + roomName), {
-    password: roomPass || null
+    password: roomPass || null,
+    created: Date.now()
   });
 };
 
+/* LOAD ROOM LIST */
 function loadRooms() {
+  const list = document.getElementById("roomList");
+  if (!list) return;
+
   onValue(ref(db, "rooms"), snap => {
-    const list = document.getElementById("roomList");
     list.innerHTML = "";
     snap.forEach(r => {
-      const li = document.createElement("li");
-      li.innerHTML = `<a href="chat.html?room=${r.key}">${r.key}</a>`;
-      list.appendChild(li);
+      const div = document.createElement("div");
+      div.className = "room";
+      div.innerHTML = `
+        <a href="chat.html?room=${r.key}" style="color:white;text-decoration:none">
+          ${r.key}
+        </a>
+      `;
+      list.appendChild(div);
     });
   });
 }
 
+/* SEND MESSAGE */
 window.sendMsg = () => {
-  const msg = document.getElementById("msg").value;
-  if (!msg) return;
+  const msgInput = document.getElementById("msg");
+  if (!msgInput.value) return;
 
   push(ref(db, "chat/" + room), {
-    name: localStorage.getItem("username"),
-    text: msg,
+    name: getUsername(),
+    text: msgInput.value,
     time: Date.now()
   });
 
-  document.getElementById("msg").value = "";
+  msgInput.value = "";
 };
 
+/* LOAD CHAT */
 if (room) {
-  document.getElementById("roomTitle").innerText = room;
+  const title = document.getElementById("roomTitle");
+  if (title) title.innerText = room;
+
   onValue(ref(db, "chat/" + room), snap => {
     const chat = document.getElementById("chat");
     chat.innerHTML = "";
     snap.forEach(m => {
       const d = m.val();
-      chat.innerHTML += `<p><b>${d.name}</b>: ${d.text}</p>`;
+      chat.innerHTML += `
+        <div class="message">
+          <div class="name">${formatName(d.name)}</div>
+          <div class="text">${d.text}</div>
+        </div>
+      `;
     });
+    chat.scrollTop = chat.scrollHeight;
   });
 }
+
+loadRooms();
