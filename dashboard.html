@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard • Saurus Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <h3>Dashboard</h3>
+
+  <!-- SEARCH ROOM -->
+  <input id="searchRoom" placeholder="Cari room..." oninput="filterRoom()">
+
+  <!-- LIST ROOM -->
+  <div id="roomList"></div>
+
+  <!-- CREATE ROOM -->
+  <h3>Buat Room</h3>
+  <input id="roomName" placeholder="Nama room">
+  <input id="roomPass" placeholder="Password (opsional)">
+  <button onclick="createRoom()">Buat Room</button>
+</div>
+
+<script type="module">
+  import "./app.js";
+
+  window.filterRoom = () => {
+    const q = document.getElementById("searchRoom").value.toLowerCase();
+    document.querySelectorAll(".room").forEach(r => {
+      r.style.display = r.innerText.toLowerCase().includes(q)
+        ? "block"
+        : "none";
+    });
+  };
+</script>
+
+</body>
+</html>
