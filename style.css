@@ -7,8 +7,10 @@ body {
 
 .container {
   max-width: 420px;
-  margin: auto;
-  padding: 15px;
+  margin: 0 auto;
+  padding: 12px;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 h3 {
@@ -47,8 +49,10 @@ button {
   background: #020617;
   border-radius: 12px;
   padding: 10px;
-  height: 60vh;
+  height: calc(100vh - 180px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .message {
