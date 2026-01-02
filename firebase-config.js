@@ -1,4 +1,3 @@
-// firebase-config.js (jangan share file ini!)
 export const firebaseConfig = {
   apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
   authDomain: "saurusproject-6974b.firebaseapp.com",
