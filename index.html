@@ -1,330 +1,185 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saurus Store</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saurus Store</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#b91c1c',
-            secondary: '#991b1b',
-            dark: '#111827',
-            light: '#f3f4f6',
-            border: '#7f1d1d'
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    body { background: linear-gradient(180deg, #111827, #1f2937); }
-    .card { background: #1f2937; border: 1px solid #4b5563; color: #f3f4f6; }
-    .btn { background: linear-gradient(135deg, #b91c1c, #991b1b); color: white; }
-    .page { display: none; }
-    .page.active { display: block; }
-  </style>
-</head>
-
-<body class="max-w-md mx-auto min-h-screen pb-28 text-light">
-
-<!-- Login -->
-<div id="login">
-  <h1 class="text-center text-3xl font-bold text-primary mt-10">Saurus Store</h1>
-  <div class="input-box p-4 mt-10">
-    <input type="text" id="nama" placeholder="Masukkan nama kamu..." class="w-full p-4 mb-4 bg-dark border border-gray-600 rounded-lg text-white">
-    <button onclick="masuk()" class="btn w-full py-4 rounded-xl font-bold">Masuk</button>
-  </div>
-</div>
-
-<!-- Dashboard -->
-<div id="dashboard" class="hidden">
-  <header class="flex justify-between items-center p-4 bg-dark shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
-        <i class="fas fa-store"></i>
-      </div>
-      <div>
-        <p class="font-bold text-primary">Saurus Store</p>
-        <p class="text-xs text-gray-400">DIGITAL MARKET</p>
-      </div>
-    </div>
-
-    <div class="flex gap-4">
-      <button onclick="showPage('cart')" class="relative text-primary">
-        <i class="fas fa-shopping-cart text-xl"></i>
-        <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
-      </button>
-      <button onclick="logout()" class="text-primary">
-        <i class="fas fa-sign-out-alt text-xl"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- Kategori -->
-  <section class="px-4 grid grid-cols-2 gap-3 mt-4">
-    <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
-      <p class="font-bold text-primary" id="botTitle">SEWA BOT</p>
-      <p class="text-xs text-gray-400" id="botDesc">Luna AI MD v7.00</p>
-    </button>
-    <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
-      <p class="font-bold text-primary">PANEL</p>
-      <p class="text-xs text-gray-400">WA / Telegram</p>
-    </button>
-  </section>
-
-  <!-- BOT -->
-  <section id="bot" class="page active px-4 mt-6 space-y-4">
-    <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
-    <div id="botList" class="space-y-4"></div>
-  </section>
-
-  <!-- PANEL -->
-  <section id="panel" class="page px-4 mt-6 space-y-4">
-    <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
-    <div id="panelList" class="space-y-4"></div>
-  </section>
-
-  <!-- CART -->
-  <section id="cart" class="page px-4 mt-6 space-y-4">
-    <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
-    <div id="cartList" class="space-y-3"></div>
-
-    <div class="card p-4 font-bold text-center">
-      Total: <span id="totalPrice">Rp0</span>
-    </div>
-
-    <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
-      Order via WhatsApp
-    </button>
-
-    <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary border border-primary">
-      Order via Telegram
-    </button>
-  </section>
-
-  <!-- ADMIN -->
-  <section id="admin" class="page px-4 mt-6 space-y-4">
-    <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
-    <div class="card p-4">
-      <input type="text" id="newName" placeholder="Nama Produk" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-      <input type="number" id="newPrice" placeholder="Harga (contoh: 5000)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-      <input type="text" id="newBotName" placeholder="Custom Nama Bot (Luna AI MD v7)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-      <button onclick="tambahProduk()" class="btn w-full py-3">Tambah Produk</button>
-      <button onclick="customBotName()" class="btn w-full py-3 mt-3 bg-secondary">Custom Nama Bot</button>
-    </div>
-
-    <div id="adminProductList" class="space-y-3"></div>
-  </section>
-</div>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-// Firebase Config (khusus untuk produk & custom nama bot)
-const firebaseConfig = {
-  apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-  authDomain: "saurusproject-6974b.firebaseapp.com",
-  databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "saurusproject-6974b",
-  storageBucket: "saurusproject-6974b.appspot.com",
-  messagingSenderId: "519472343742",
-  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-// Variabel global
-let cart = [];
-let namaUser = '';
-
-// Login
-function masuk() {
-  namaUser = document.getElementById('nama').value.trim();
-  if (!namaUser) return alert('Nama wajib diisi!');
-
-  // Owner mode hanya kalau nama PERSIS {khusus:owner}
-  const isOwner = namaUser === '{khusus:owner}';
-  if (isOwner) namaUser = 'Owner';
-
-  document.getElementById('login').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('user-name').textContent = namaUser;
-
-  // Tampil admin panel hanya kalau owner
-  if (isOwner) document.getElementById('admin').classList.add('active');
-
-  renderProduk();
-  updateCart();
-}
-
-// Logout (bersihkan semuanya)
-function logout() {
-  if (confirm('Yakin logout?')) {
-    cart = [];
-    namaUser = '';
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('login').style.display = 'block';
-    document.getElementById('nama').value = '';
-    location.reload(true); // reload tanpa cache
-  }
-}
-
-// Render produk (kosong dulu)
-function renderProduk() {
-  db.ref('products').on('value', snapshot => {
-    const botList = document.getElementById('botList');
-    const panelList = document.getElementById('panelList');
-    botList.innerHTML = panelList.innerHTML = '';
-
-    const products = snapshot.val() || {};
-
-    if (Object.keys(products).length === 0) {
-      botList.innerHTML = panelList.innerHTML = '<p class="text-center text-gray-400">Belum ada produk. Tunggu owner tambah.</p>';
-      return;
+tailwind.config={
+  theme:{extend:{
+    colors:{
+      primary:'#7c3aed',
+      secondary:'#a78bfa',
+      text:'#1e1b4b',
+      soft:'#6d28d9',
+      border:'#ddd6fe'
     }
-
-    Object.keys(products).forEach(key => {
-      const p = products[key];
-      const item = `
-        <div class="card p-4 rounded-xl">
-          <p class="font-bold text-primary">${p.nama}</p>
-          <p class="text-xs text-gray-400">${p.desc || 'Deskripsi produk'}</p>
-          <p class="font-bold text-primary mt-2">Rp ${p.harga.toLocaleString('id-ID')}</p>
-          <button onclick="addToCart('${p.nama}', ${p.harga})" class="btn w-full mt-3 py-2 rounded-xl text-sm">Tambah ke Keranjang</button>
-        </div>
-      `;
-      botList.innerHTML += item;
-      panelList.innerHTML += item;
-    });
-  });
-
-  // Custom nama bot
-  db.ref('botName').on('value', snapshot => {
-    const nama = snapshot.val() || 'Luna AI MD v7.00';
-    document.getElementById('botTitle').textContent = 'SEWA BOT - ' + nama;
-    document.getElementById('botDesc').textContent = nama;
-  });
+  }}
 }
+</script>
 
-// Tambah ke keranjang
-function addToCart(nama, harga) {
-  cart.push({ nama, harga });
-  updateCart();
-}
+<style>
+body{background:linear-gradient(180deg,#ede9fe,#faf5ff)}
+.card{background:#fff;border:1px solid #ddd6fe}
+.btn{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+.page{display:none}
+.page.active{display:block}
+</style>
+</head>
 
-// Update keranjang
-function updateCart() {
-  document.getElementById('cartCount').textContent = cart.length;
+<body class="max-w-md mx-auto min-h-screen pb-28 text-text">
 
-  const cartList = document.getElementById('cartList');
-  cartList.innerHTML = '';
-  let total = 0;
+<!-- HEADER -->
+<header class="flex justify-between items-center p-4">
+  <div class="flex items-center gap-3">
+    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
+      <i class="fas fa-store"></i>
+    </div>
+    <div>
+      <p id="storeName" class="font-bold text-primary">Saurus Store</p>
+      <p id="subtitle" class="text-xs text-soft">DIGITAL MARKET</p>
+    </div>
+  </div>
 
-  cart.forEach(item => {
-    total += item.harga;
-    cartList.innerHTML += `
-      <div class="card p-3 flex justify-between items-center">
-        <div>
-          <p class="font-bold">${item.nama}</p>
-          <p class="text-xs text-gray-400">Rp ${item.harga.toLocaleString('id-ID')}</p>
-        </div>
+  <div class="flex gap-4">
+    <button onclick="showPage('cart')" class="relative text-primary">
+      <i class="fas fa-shopping-cart text-xl"></i>
+      <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+    </button>
+    <button onclick="openAdmin()" class="text-primary">
+      <i class="fas fa-user-shield text-xl"></i>
+    </button>
+  </div>
+</header>
+
+<!-- LIST -->
+<section id="list" class="page active px-4 mt-4 space-y-3">
+  <h2 class="font-bold text-lg text-primary">🛒 Daftar Produk</h2>
+  <div id="productList" class="space-y-3"></div>
+</section>
+
+<!-- CART -->
+<section id="cart" class="page px-4 mt-4 space-y-3">
+  <h2 class="font-bold text-lg text-primary">🧾 Keranjang</h2>
+  <div id="cartList"></div>
+  <div class="card p-3 font-bold">Total: <span id="totalPrice">Rp0</span></div>
+  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">Order WhatsApp</button>
+  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary">Order Telegram</button>
+</section>
+
+<!-- ADMIN -->
+<section id="admin" class="page px-4 mt-4 space-y-3">
+  <h2 class="font-bold text-lg text-primary">👑 Admin Panel</h2>
+
+  <input id="newName" placeholder="Nama Produk" class="card p-2 w-full rounded">
+  <input id="newPrice" placeholder="Harga" type="number" class="card p-2 w-full rounded">
+  <button onclick="addProduct()" class="btn w-full py-2 rounded">Tambah Produk</button>
+
+  <hr>
+  <h3 class="font-bold text-primary">⚙️ Config</h3>
+  <input id="confName" placeholder="Nama Toko" class="card p-2 w-full rounded">
+  <input id="confWA" placeholder="Nomor WA" class="card p-2 w-full rounded">
+  <input id="confTG" placeholder="Link Telegram" class="card p-2 w-full rounded">
+  <button onclick="saveConfig()" class="btn w-full py-2 rounded">Simpan Config</button>
+</section>
+
+<script>
+/* ===== FIREBASE ===== */
+firebase.initializeApp({
+  apiKey:"AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+  databaseURL:"https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app"
+})
+const db=firebase.database()
+
+/* ===== CONFIG ===== */
+const ADMIN_PW="rusdev"
+let config={}, products={}, cart=[]
+
+/* ===== LOAD ===== */
+db.ref("config").on("value",s=>{
+  config=s.val()||{}
+  storeName.innerText=config.storeName||"Saurus Store"
+  subtitle.innerText=config.subtitle||"DIGITAL MARKET"
+})
+db.ref("products").on("value",s=>{
+  products=s.val()||{}
+  render()
+})
+
+/* ===== RENDER ===== */
+function render(){
+  productList.innerHTML=""
+  Object.keys(products).forEach(id=>{
+    const p=products[id]
+    productList.innerHTML+=`
+    <div class="card p-3 rounded-xl flex justify-between items-center">
+      <div>
+        <p class="font-bold">${p.name}</p>
+        <p class="text-sm text-soft">Rp${p.price}</p>
       </div>
-    `;
-  });
-
-  document.getElementById('totalPrice').textContent = total.toLocaleString('id-ID');
+      <button onclick="addCart('${id}')" class="btn px-3 py-1 rounded">+</button>
+    </div>`
+  })
 }
 
-// Checkout WA
-function checkoutWA() {
-  if (cart.length === 0) return alert('Keranjang kosong!');
-  let msg = `Hai saurus aku ${namaUser} ingin membeli produk ${cart.map(item => item.nama).join(', ')} dengan harga ${cart.map(item => item.harga).join(', ')}`;
-  msg = encodeURIComponent(msg);
-  window.open(`https://wa.me/62895393336779?text=${msg}`, '_blank');
-  cart = [];
-  updateCart();
+/* ===== CART ===== */
+function addCart(id){
+  cart.push(products[id])
+  cartCount.innerText=cart.length
+  updateCart()
+}
+function updateCart(){
+  cartList.innerHTML=""
+  let total=0
+  cart.forEach(p=>{
+    total+=Number(p.price)
+    cartList.innerHTML+=`<div class="card p-2">${p.name} - Rp${p.price}</div>`
+  })
+  totalPrice.innerText="Rp"+total
 }
 
-// Checkout Telegram
-function checkoutTG() {
-  if (cart.length === 0) return alert('Keranjang kosong!');
-  let msg = `Hai saurus aku ${namaUser} ingin membeli produk ${cart.map(item => item.nama).join(', ')} dengan harga ${cart.map(item => item.harga).join(', ')}`;
-  msg = encodeURIComponent(msg);
-  window.open(`https://t.me/lordsaurus?text=${msg}`, '_blank');
-  cart = [];
-  updateCart();
+/* ===== CHECKOUT ===== */
+function checkoutWA(){
+  location.href=`https://wa.me/${config.wa}?text=Order:${cart.map(p=>p.name).join(", ")}`
+}
+function checkoutTG(){
+  location.href=config.telegram
 }
 
-// Tampil halaman
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+/* ===== ADMIN ===== */
+function openAdmin(){
+  const pw=prompt("Password Admin:")
+  if(pw===ADMIN_PW) showPage("admin")
+  else alert("Password salah")
+}
+function addProduct(){
+  const id=Date.now()
+  db.ref("products/"+id).set({
+    name:newName.value,
+    price:newPrice.value
+  })
+}
+function saveConfig(){
+  db.ref("config").set({
+    storeName:confName.value,
+    wa:confWA.value,
+    telegram:confTG.value,
+    subtitle:"DIGITAL MARKET"
+  })
 }
 
-// Admin panel
-function openAdmin() {
-  if (namaUser !== 'Owner') return alert('Akses ditolak! Hanya owner yang bisa masuk.');
-  showPage('admin');
-  renderAdmin();
-}
-
-// Render admin list
-function renderAdmin() {
-  db.ref('products').once('value').then(snapshot => {
-    const list = document.getElementById('adminProductList');
-    list.innerHTML = '';
-    const products = snapshot.val() || {};
-
-    Object.keys(products).forEach(key => {
-      const p = products[key];
-      list.innerHTML += `
-        <div class="card p-4 flex justify-between items-center">
-          <div>
-            <p class="font-bold">${p.nama}</p>
-            <p>Rp ${p.harga.toLocaleString('id-ID')}</p>
-          </div>
-          <div>
-            <button onclick="editPrice('${key}',${p.harga})" class="text-blue-400 mr-2">Edit</button>
-            <button onclick="hapusProduk('${key}')" class="text-red-500">Hapus</button>
-          </div>
-        </div>
-      `;
-    });
-  });
-}
-
-// Tambah produk baru
-function tambahProduk() {
-  const nama = prompt('Nama produk baru:');
-  const harga = parseInt(prompt('Harga:'));
-  if (nama && !isNaN(harga)) {
-    const id = db.ref('products').push().key;
-    db.ref('products/' + id).set({ nama, harga });
-  }
-}
-
-// Custom nama bot
-function customBotName() {
-  const nama = prompt('Custom nama bot baru (contoh: Luna AI MD v8):');
-  if (nama) db.ref('botName').set(nama);
-}
-
-// Edit harga
-function editPrice(key, oldHarga) {
-  const harga = parseInt(prompt('Harga baru:', oldHarga));
-  if (!isNaN(harga)) db.ref('products/' + key).update({ harga });
-}
-
-// Hapus produk
-function hapusProduk(key) {
-  if (confirm('Yakin hapus produk ini?')) db.ref('products/' + key).remove();
+/* ===== UTIL ===== */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+  document.getElementById(id).classList.add("active")
 }
 </script>
 
