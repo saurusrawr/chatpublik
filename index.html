@@ -35,38 +35,40 @@
 
 <body class="max-w-md mx-auto min-h-screen pb-28 text-light">
 
-<!-- HEADER -->
-<header class="flex justify-between items-center p-4 bg-dark shadow-lg">
-  <div class="flex items-center gap-3">
-    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
-      <i class="fas fa-store"></i>
-    </div>
-    <div>
-      <p class="font-bold text-primary">Saurus Store</p>
-      <p class="text-xs text-gray-400">DIGITAL MARKET</p>
-    </div>
-  </div>
-
-  <div class="flex gap-4" id="headerIcons">
-    <button onclick="showPage('cart')" class="relative text-primary">
-      <i class="fas fa-shopping-cart text-xl"></i>
-      <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
-    </button>
-  </div>
-</header>
-
-<!-- LOGIN -->
-<div id="login" class="flex flex-col justify-center items-center min-h-screen">
-  <div class="card p-8 rounded-2xl w-11/12 max-w-sm">
-    <h1 class="text-3xl font-bold text-center text-primary mb-6">Saurus Store</h1>
+<!-- Login -->
+<div id="login">
+  <h1 class="text-center text-3xl font-bold text-primary mt-10">Saurus Store</h1>
+  <div class="input-box p-4 mt-10">
     <input type="text" id="nama" placeholder="Masukkan nama kamu..." class="w-full p-4 mb-4 bg-dark border border-gray-600 rounded-lg text-white">
-    <button onclick="login()" class="btn w-full py-4 rounded-xl font-bold text-lg">MASUK</button>
+    <button onclick="masuk()" class="btn w-full py-4 rounded-xl font-bold">Masuk</button>
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- Dashboard -->
 <div id="dashboard" class="hidden">
-  <!-- KATEGORI -->
+  <header class="flex justify-between items-center p-4 bg-dark shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
+        <i class="fas fa-store"></i>
+      </div>
+      <div>
+        <p class="font-bold text-primary">Saurus Store</p>
+        <p class="text-xs text-gray-400">DIGITAL MARKET</p>
+      </div>
+    </div>
+
+    <div class="flex gap-4">
+      <button onclick="showPage('cart')" class="relative text-primary">
+        <i class="fas fa-shopping-cart text-xl"></i>
+        <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+      </button>
+      <button onclick="logout()" class="text-primary">
+        <i class="fas fa-sign-out-alt text-xl"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Kategori -->
   <section class="px-4 grid grid-cols-2 gap-3 mt-4">
     <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
       <p class="font-bold text-primary" id="botTitle">SEWA BOT</p>
@@ -114,7 +116,7 @@
     <div class="card p-4">
       <input type="text" id="newName" placeholder="Nama Produk" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
       <input type="number" id="newPrice" placeholder="Harga (contoh: 5000)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-      <input type="text" id="newBotName" placeholder="Custom Nama Bot" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+      <input type="text" id="newBotName" placeholder="Custom Nama Bot (Luna AI MD v7)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
       <button onclick="tambahProduk()" class="btn w-full py-3">Tambah Produk</button>
       <button onclick="customBotName()" class="btn w-full py-3 mt-3 bg-secondary">Custom Nama Bot</button>
     </div>
@@ -132,7 +134,7 @@ const firebaseConfig = {
   projectId: "saurusproject-6974b",
   storageBucket: "saurusproject-6974b.appspot.com",
   messagingSenderId: "519472343742",
-  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
+  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -143,7 +145,7 @@ let cart = [];
 let namaUser = '';
 
 // Login
-function login() {
+function masuk() {
   namaUser = document.getElementById('nama').value.trim();
   if (!namaUser) return alert('Nama wajib diisi!');
 
@@ -153,6 +155,7 @@ function login() {
 
   document.getElementById('login').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('user-name').textContent = namaUser;
 
   // Tampil admin panel hanya kalau owner
   if (isOwner) document.getElementById('admin').classList.add('active');
@@ -161,20 +164,24 @@ function login() {
   updateCart();
 }
 
-// Logout (benar-benar keluar)
+// Logout (bersihkan semuanya)
 function logout() {
   if (confirm('Yakin logout?')) {
     cart = [];
     namaUser = '';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('nama').value = '';
+    // Clear Firebase auth
     firebase.auth().signOut().then(() => {
-      location.reload(true); // hard reload untuk bersihkan semua cache
+      location.reload(true); // force reload tanpa cache
     }).catch(() => {
       location.reload(true);
     });
   }
 }
 
-// Render produk dari Firebase
+// Render produk (kosong dulu)
 function renderProduk() {
   db.ref('products').on('value', snapshot => {
     const botList = document.getElementById('botList');
@@ -206,7 +213,7 @@ function renderProduk() {
   // Custom nama bot
   db.ref('botName').on('value', snapshot => {
     const nama = snapshot.val() || 'Luna AI MD v7.00';
-    document.getElementById('botTitle').textContent = 'SEWA BOT';
+    document.getElementById('botTitle').textContent = 'SEWA BOT - ' + nama;
     document.getElementById('botDesc').textContent = nama;
   });
 }
