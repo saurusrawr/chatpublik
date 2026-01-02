@@ -13,11 +13,11 @@
       theme: {
         extend: {
           colors: {
-            primary: '#b91c1c',      // Merah horor
-            secondary: '#991b1b',    // Merah gelap
-            dark: '#111827',         // Hitam gelap
-            light: '#f3f4f6',        // Putih abu-abu lembut
-            border: '#7f1d1d'        // Merah tua
+            primary: '#b91c1c',
+            secondary: '#991b1b',
+            dark: '#111827',
+            light: '#f3f4f6',
+            border: '#7f1d1d'
           }
         }
       }
@@ -47,72 +47,81 @@
     </div>
   </div>
 
-  <div class="flex gap-4">
+  <div class="flex gap-4" id="headerIcons">
     <button onclick="showPage('cart')" class="relative text-primary">
       <i class="fas fa-shopping-cart text-xl"></i>
       <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
     </button>
-    <button onclick="logout()" class="text-primary">
-      <i class="fas fa-sign-out-alt text-xl"></i>
-    </button>
   </div>
 </header>
 
-<!-- KATEGORI -->
-<section class="px-4 grid grid-cols-2 gap-3 mt-4">
-  <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
-    <p class="font-bold text-primary" id="botTitle">SEWA BOT</p>
-    <p class="text-xs text-gray-400" id="botDesc">Luna AI MD v7.00</p>
-  </button>
-  <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
-    <p class="font-bold text-primary">PANEL</p>
-    <p class="text-xs text-gray-400">WA / Telegram</p>
-  </button>
-</section>
-
-<!-- BOT -->
-<section id="bot" class="page active px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
-  <div id="botList" class="space-y-4"></div>
-</section>
-
-<!-- PANEL -->
-<section id="panel" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
-  <div id="panelList" class="space-y-4"></div>
-</section>
-
-<!-- CART -->
-<section id="cart" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
-  <div id="cartList" class="space-y-3"></div>
-
-  <div class="card p-4 font-bold text-center">
-    Total: <span id="totalPrice">Rp0</span>
+<!-- LOGIN -->
+<div id="login" class="flex flex-col justify-center items-center min-h-screen">
+  <div class="card p-8 rounded-2xl w-11/12 max-w-sm">
+    <h1 class="text-3xl font-bold text-center text-primary mb-6">Saurus Store</h1>
+    <input type="text" id="nama" placeholder="Masukkan nama kamu..." class="w-full p-4 mb-4 bg-dark border border-gray-600 rounded-lg text-white">
+    <button onclick="login()" class="btn w-full py-4 rounded-xl font-bold text-lg">MASUK</button>
   </div>
+</div>
 
-  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
-    Order via WhatsApp
-  </button>
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+  <!-- KATEGORI -->
+  <section class="px-4 grid grid-cols-2 gap-3 mt-4">
+    <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
+      <p class="font-bold text-primary" id="botTitle">SEWA BOT</p>
+      <p class="text-xs text-gray-400" id="botDesc">Luna AI MD v7.00</p>
+    </button>
+    <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
+      <p class="font-bold text-primary">PANEL</p>
+      <p class="text-xs text-gray-400">WA / Telegram</p>
+    </button>
+  </section>
 
-  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary border border-primary">
-    Order via Telegram
-  </button>
-</section>
+  <!-- BOT -->
+  <section id="bot" class="page active px-4 mt-6 space-y-4">
+    <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
+    <div id="botList" class="space-y-4"></div>
+  </section>
 
-<!-- ADMIN -->
-<section id="admin" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
-  <div class="card p-4">
-    <input type="text" id="newName" placeholder="Nama Produk" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-    <input type="number" id="newPrice" placeholder="Harga (contoh: 5000)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-    <input type="text" id="newBotName" placeholder="Custom Nama Bot (Luna AI MD v7)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
-    <button onclick="tambahProduk()" class="btn w-full py-3">Tambah Produk</button>
-    <button onclick="customBotName()" class="btn w-full py-3 mt-3 bg-secondary">Custom Nama Bot</button>
-  </div>
+  <!-- PANEL -->
+  <section id="panel" class="page px-4 mt-6 space-y-4">
+    <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
+    <div id="panelList" class="space-y-4"></div>
+  </section>
 
-  <div id="adminProductList" class="space-y-3"></div>
-</section>
+  <!-- CART -->
+  <section id="cart" class="page px-4 mt-6 space-y-4">
+    <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
+    <div id="cartList" class="space-y-3"></div>
+
+    <div class="card p-4 font-bold text-center">
+      Total: <span id="totalPrice">Rp0</span>
+    </div>
+
+    <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
+      Order via WhatsApp
+    </button>
+
+    <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary border border-primary">
+      Order via Telegram
+    </button>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="page px-4 mt-6 space-y-4">
+    <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
+    <div class="card p-4">
+      <input type="text" id="newName" placeholder="Nama Produk" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+      <input type="number" id="newPrice" placeholder="Harga (contoh: 5000)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+      <input type="text" id="newBotName" placeholder="Custom Nama Bot" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+      <button onclick="tambahProduk()" class="btn w-full py-3">Tambah Produk</button>
+      <button onclick="customBotName()" class="btn w-full py-3 mt-3 bg-secondary">Custom Nama Bot</button>
+    </div>
+
+    <div id="adminProductList" class="space-y-3"></div>
+  </section>
+</div>
 
 <script>
 // Firebase Config
@@ -123,7 +132,7 @@ const firebaseConfig = {
   projectId: "saurusproject-6974b",
   storageBucket: "saurusproject-6974b.appspot.com",
   messagingSenderId: "519472343742",
-  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx"
+  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -134,7 +143,7 @@ let cart = [];
 let namaUser = '';
 
 // Login
-function masuk() {
+function login() {
   namaUser = document.getElementById('nama').value.trim();
   if (!namaUser) return alert('Nama wajib diisi!');
 
@@ -144,7 +153,6 @@ function masuk() {
 
   document.getElementById('login').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('user-name').textContent = namaUser;
 
   // Tampil admin panel hanya kalau owner
   if (isOwner) document.getElementById('admin').classList.add('active');
@@ -153,17 +161,15 @@ function masuk() {
   updateCart();
 }
 
-// Logout (kembali ke login + bersihkan cache)
+// Logout (benar-benar keluar)
 function logout() {
   if (confirm('Yakin logout?')) {
-    cart = []; // kosongkan keranjang
+    cart = [];
     namaUser = '';
-    document.getElementById('dashboard').style.display = 'none';
-    document.getElementById('login').style.display = 'block';
-    document.getElementById('nama').value = '';
-    // Clear Firebase auth
     firebase.auth().signOut().then(() => {
-      location.reload(); // reload total untuk bersihkan cache
+      location.reload(true); // hard reload untuk bersihkan semua cache
+    }).catch(() => {
+      location.reload(true);
     });
   }
 }
@@ -200,7 +206,7 @@ function renderProduk() {
   // Custom nama bot
   db.ref('botName').on('value', snapshot => {
     const nama = snapshot.val() || 'Luna AI MD v7.00';
-    document.getElementById('botTitle').textContent = 'SEWA BOT - ' + nama;
+    document.getElementById('botTitle').textContent = 'SEWA BOT';
     document.getElementById('botDesc').textContent = nama;
   });
 }
