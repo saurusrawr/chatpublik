@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Chat Horor - By Saurus</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -21,17 +21,19 @@
     * { margin:0; padding:0; box-sizing:border-box; }
     body { 
       font-family: 'Nosifer', cursive;
-      background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center/cover fixed;
+      background: url('https://images.unsplash.com/photo-1544194215-99a2b7b2a3f0?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center/cover fixed;
       color: var(--ghost-white);
       min-height: 100vh;
       background-attachment: fixed;
       overflow: hidden;
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .overlay { 
       position: fixed; inset: 0; 
-      background: linear-gradient(to bottom, rgba(139,0,0,0.5), rgba(26,0,0,0.9));
+      background: linear-gradient(to bottom, rgba(139,0,0,0.6), rgba(26,0,0,0.9));
       pointer-events: none;
       z-index: -1;
       animation: bloodPulse 8s infinite alternate;
@@ -39,7 +41,7 @@
 
     @keyframes bloodPulse {
       0% { opacity: 0.6; }
-      100% { opacity: 0.9; }
+      100% { opacity: 0.95; }
     }
 
     .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .6s; animation: hauntIn 2s; }
@@ -63,7 +65,7 @@
       border: 3px solid var(--horror-red);
     }
 
-    h1 { font-size: 3.8rem; margin-bottom: 25px; color: var(--ghost-white); text-shadow: 0 5px 15px rgba(139,0,0,0.8); font-family: 'Creepster', cursive; }
+    h1 { font-size: 3.5rem; margin-bottom: 25px; color: var(--ghost-white); text-shadow: 0 5px 15px rgba(139,0,0,0.8); font-family: 'Creepster', cursive; }
 
     input { width: 100%; padding: 18px; margin: 15px 0; border: 3px solid var(--horror-red); border-radius: 15px; font-size: 1.2rem; background: rgba(0,0,0,0.4); color: white; }
     button { background: var(--horror-red); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; font-family: 'Creepster', cursive; }
@@ -165,17 +167,19 @@
   </div>
 </div>
 
-<!-- Telepon UI -->
+<!-- Telepon UI Horor -->
 <div id="telepon-ui" class="modal hidden">
   <div class="box">
-    <h3>Telepon Horor</h3>
-    <p>Menghubungkan ke kegelapan...</p>
-    <button onclick="akhiriTelepon()">Akhiri</button>
+    <h3>Telepon Dari Kegelapan</h3>
+    <p>Suara setan sedang menghubungkan...</p>
+    <button onclick="akhiriTelepon()">Akhiri Panggilan</button>
   </div>
 </div>
 
+<!-- Suara Horor Auto Play Saat Masuk (dari YouTube embed, low volume) -->
+<iframe id="horror-sound" width="0" height="0" src="https://www.youtube.com/embed/7vF2o5f0w2g?autoplay=1&mute=0&loop=1&playlist=7vF2o5f0w2g" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
 <script>
-  // Firebase config langsung (tanpa encode)
   const firebaseConfig = {
     apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
     authDomain: "saurusproject-6974b.firebaseapp.com",
@@ -183,7 +187,7 @@
     projectId: "saurusproject-6974b",
     storageBucket: "saurusproject-6974b.appspot.com",
     messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti dengan appId asli dari Firebase kalau punya
+    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya appId web
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -325,7 +329,7 @@
 
     let pengirim = msg.pengirim;
     if (msg.pengirim.includes('{khusus:saurus}')) {
-      pengirim += ' <span class="owner-badge">OWNER TELAH TIBA!</span>';
+      pengirim += ' <span class="owner-badge">OWNER</span>';
     }
 
     let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
@@ -408,11 +412,11 @@
     }
   };
 
-  // Telepon (simulasi sederhana, bisa upgrade ke WebRTC nanti)
-  document.getElementById('call-btn').onclick = () => {
-    alert('Telepon horor dimulai... (fitur simulasi, suara akan datang dari kegelapan)');
+  // Telepon horor (simulasi dengan suara menyeramkan)
+  function mulaiTelepon() {
+    alert('Telepon horor dimulai... Suara setan sedang menghubungkan dari kegelapan!');
     document.getElementById('telepon-ui').classList.remove('hidden');
-  };
+  }
 
   function akhiriTelepon() {
     document.getElementById('telepon-ui').classList.add('hidden');
