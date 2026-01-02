@@ -1,250 +1,299 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saurus Store</title>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-  <style>
-    body { 
-      margin: 0; font-family: system-ui, sans-serif; 
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
-      color: #e0e0e0; min-height: 100vh; 
-      overflow-y: auto; 
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#dc2626',      // Merah utama
+            secondary: '#ef4444',    // Merah terang
+            dark: '#111827',         // Hitam gelap
+            light: '#f3f4f6',        // Putih abu-abu lembut
+            border: '#fecaca'        // Merah muda soft
+          }
+        }
+      }
     }
-    .container { padding: 15px; max-width: 100%; margin: 0 auto; }
-    h1 { text-align: center; margin: 20px 0; font-size: 2.5rem; color: #00d4ff; text-shadow: 0 0 15px #00d4ff; }
-    .input-box { margin: 30px 0; text-align: center; }
-    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 12px; border: 2px solid #00d4ff; background: rgba(255,255,255,0.05); color: white; box-shadow: 0 0 10px rgba(0,212,255,0.3); }
-    button { width: 90%; padding: 15px; margin: 10px 0; background: #00d4ff; color: #000; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 0 15px rgba(0,212,255,0.5); transition: all .3s; }
-    button:hover { transform: scale(1.03); box-shadow: 0 0 25px rgba(0,212,255,0.8); }
-    .product-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
-    .product { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid #00d4ff; box-shadow: 0 5px 15px rgba(0,212,255,0.2); }
-    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #00d4ff; }
-    .product p { margin: 5px 0; color: #aaa; }
-    .buy-btn { background: #00b894; color: white; padding: 12px; border: none; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-    .cart-icon { position: fixed; top: 15px; right: 15px; background: #0d1117; color: #00d4ff; padding: 12px 16px; border-radius: 50%; font-size: 1.4rem; border: 2px solid #00d4ff; cursor: pointer; z-index: 100; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(0,212,255,0.4); }
-    .cart-count { background: #00d4ff; color: #000; border-radius: 50%; padding: 6px 10px; font-size: 1rem; font-weight: bold; }
-    .cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; padding: 20px; z-index: 99; overflow-y: auto; }
-    .cart-modal.hidden { display: none; }
-    .cart-item { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #00d4ff; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 10px rgba(0,212,255,0.2); }
-    .order-btn { width: 100%; padding: 15px; margin-top: 20px; background: #00d4ff; color: #000; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 15px rgba(0,212,255,0.5); }
-    .admin-section { background: rgba(0,212,255,0.1); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.3); }
-    .admin-input { margin: 10px 0; }
-    .admin-btn { background: #21262d; color: #00d4ff; border: 1px solid #00d4ff; }
-    .hidden { display: none !important; }
+  </script>
+
+  <style>
+    body { background: linear-gradient(180deg, #111827, #1f2937); }
+    .card { background: #1f2937; border: 1px solid #4b5563; color: #f3f4f6; }
+    .btn { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
+    .page { display: none; }
+    .page.active { display: block; }
   </style>
 </head>
-<body>
 
-<div class="container">
+<body class="max-w-md mx-auto min-h-screen pb-28 text-light">
 
-  <!-- Login -->
-  <div id="login">
-    <h1>Saurus Store</h1>
-    <div class="input-box">
-      <input type="text" id="nama" placeholder="Masukkan nama kamu...">
-      <button onclick="masuk()">Masuk</button>
+<!-- HEADER -->
+<header class="flex justify-between items-center p-4 bg-dark shadow-lg">
+  <div class="flex items-center gap-3">
+    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
+      <i class="fas fa-store"></i>
+    </div>
+    <div>
+      <p class="font-bold text-primary">Saurus Store</p>
+      <p class="text-xs text-gray-400">DIGITAL MARKET</p>
     </div>
   </div>
 
-  <!-- Dashboard & Keranjang -->
-  <div id="dashboard" class="hidden">
-    <h1>Selamat Datang, <span id="user-name"></span>!</h1>
-    <h2>Daftar Produk</h2>
-    <div id="product-list" class="product-list"></div>
+  <div class="flex gap-4">
+    <button onclick="showPage('cart')" class="relative text-primary">
+      <i class="fas fa-shopping-cart text-xl"></i>
+      <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
+    </button>
+    <button onclick="openAdmin()" class="text-primary">
+      <i class="fas fa-user-shield text-xl"></i>
+    </button>
+  </div>
+</header>
 
-    <!-- Admin Panel (hanya kalau nama persis {khusus:owner}) -->
-    <div id="admin-panel" class="admin-section hidden">
-      <h3>Admin Panel</h3>
-      <div class="admin-input">
-        <input type="text" id="new-nama" placeholder="Nama Produk">
-        <input type="number" id="new-harga" placeholder="Harga (contoh: 5000)">
-        <button class="admin-btn" onclick="tambahProduk()">Tambah Produk</button>
-      </div>
-    </div>
+<!-- KATEGORI -->
+<section class="px-4 grid grid-cols-2 gap-3 mt-4">
+  <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
+    <p class="font-bold text-primary">SEWA BOT</p>
+    <p class="text-xs text-gray-400">Luna AI MD v7.00</p>
+  </button>
+  <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
+    <p class="font-bold text-primary">PANEL</p>
+    <p class="text-xs text-gray-400">WA / Telegram</p>
+  </button>
+</section>
 
-    <!-- Ikon Keranjang -->
-    <div class="cart-icon" onclick="tampilKeranjang()">
-      🛒 <span id="cart-count" class="cart-count">0</span>
-    </div>
+<!-- BOT (kosong dulu) -->
+<section id="bot" class="page active px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
+  <div id="botList" class="space-y-4">
+    <!-- Produk akan muncul di sini dari Firebase nanti -->
+    <p class="text-center text-gray-400">Belum ada produk. Tunggu update dari owner.</p>
+  </div>
+</section>
 
-    <!-- Modal Keranjang -->
-    <div id="cart-modal" class="cart-modal hidden">
-      <h2>Keranjang Belanja</h2>
-      <div id="cart-items"></div>
-      <div style="margin-top:20px;text-align:right;font-size:1.2rem;">
-        Total: Rp <span id="total-harga">0</span>
-      </div>
-      <button class="order-btn" onclick="orderWA()">Order via WhatsApp</button>
-      <button class="order-btn" style="background:#1e90ff;" onclick="orderTelegram()">Order via Telegram</button>
-      <button style="margin-top:10px;background:#e74c3c;" onclick="tutupKeranjang()">Tutup</button>
-    </div>
+<!-- PANEL (kosong dulu) -->
+<section id="panel" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
+  <div id="panelList" class="space-y-4">
+    <p class="text-center text-gray-400">Belum ada panel. Tunggu owner tambah.</p>
+  </div>
+</section>
+
+<!-- CART -->
+<section id="cart" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
+  <div id="cartList" class="space-y-3"></div>
+
+  <div class="card p-4 font-bold text-center">
+    Total: <span id="totalPrice">Rp0</span>
   </div>
 
-</div>
+  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
+    Order via WhatsApp
+  </button>
+
+  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary border border-primary">
+    Order via Telegram
+  </button>
+</section>
+
+<!-- ADMIN (hanya muncul kalau password benar) -->
+<section id="admin" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
+  <div class="card p-4">
+    <input type="text" id="newName" placeholder="Nama Produk" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+    <input type="number" id="newPrice" placeholder="Harga (contoh: 5000)" class="w-full p-3 mb-3 bg-dark border border-gray-600 rounded-lg text-white">
+    <button onclick="tambahProduk()" class="btn w-full py-3">Tambah Produk</button>
+  </div>
+
+  <div id="adminProductList" class="space-y-3"></div>
+</section>
 
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-    authDomain: "saurusproject-6974b.firebaseapp.com",
-    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "saurusproject-6974b",
-    storageBucket: "saurusproject-6974b.appspot.com",
-    messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
-  };
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+  authDomain: "saurusproject-6974b.firebaseapp.com",
+  databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "saurusproject-6974b",
+  storageBucket: "saurusproject-6974b.appspot.com",
+  messagingSenderId: "519472343742",
+  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-  let namaUser = '';
-  let isOwner = false;
-  let keranjang = [];
+// Keranjang lokal
+let cart = [];
+let namaUser = '';
 
-  // Login
-  function masuk() {
-    namaUser = document.getElementById('nama').value.trim();
-    if (!namaUser) return alert('Nama wajib diisi!');
+// Login
+function masuk() {
+  namaUser = document.getElementById('nama').value.trim();
+  if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Admin panel hanya kalau nama PERSIS {khusus:owner}
-    isOwner = namaUser === '{khusus:owner}';
-    if (isOwner) namaUser = 'Owner';
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
 
-    document.getElementById('login').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    document.getElementById('user-name').textContent = namaUser;
-
-    tampilProduk();
-
-    // Tampil admin panel hanya kalau owner
-    if (isOwner) document.getElementById('admin-panel').classList.remove('hidden');
+  // Admin panel hanya kalau nama persis {khusus:owner}
+  if (namaUser === '{khusus:owner}') {
+    document.getElementById('admin').classList.add('active');
+    renderAdmin();
   }
 
-  // Tampil produk
-  function tampilProduk() {
-    db.ref('products').on('value', snapshot => {
-      const list = document.getElementById('product-list');
-      list.innerHTML = '';
-      const products = snapshot.val() || {};
+  renderProduk();
+  updateCart();
+}
 
-      Object.keys(products).forEach(key => {
-        const p = products[key];
-        const div = document.createElement('div');
-        div.className = 'product';
-        div.innerHTML = `
-          <h3>${p.nama}</h3>
-          <p>Harga: Rp ${p.harga.toLocaleString('id-ID')}</p>
-          <button class="buy-btn" onclick="tambahKeKeranjang('${p.nama}', ${p.harga})">Tambah ke Keranjang</button>
-        `;
+// Render produk dari Firebase (kosong dulu)
+function renderProduk() {
+  db.ref('products').on('value', snapshot => {
+    const botList = document.getElementById('botList');
+    const panelList = document.getElementById('panelList');
+    botList.innerHTML = panelList.innerHTML = '';
 
-        if (isOwner) {
-          const editBtn = document.createElement('button');
-          editBtn.innerText = 'Edit';
-          editBtn.style.background = '#3498db';
-          editBtn.style.margin = '5px 0';
-          editBtn.onclick = () => editProduk(key, p.nama, p.harga);
-          div.appendChild(editBtn);
+    const products = snapshot.val() || {};
 
-          const delBtn = document.createElement('button');
-          delBtn.innerText = 'Hapus';
-          delBtn.style.background = '#e74c3c';
-          delBtn.onclick = () => hapusProduk(key);
-          div.appendChild(delBtn);
-        }
+    if (Object.keys(products).length === 0) {
+      botList.innerHTML = panelList.innerHTML = '<p class="text-center text-gray-400">Belum ada produk. Tunggu owner tambah.</p>';
+      return;
+    }
 
-        list.appendChild(div);
-      });
+    Object.keys(products).forEach(key => {
+      const p = products[key];
+      const item = `
+        <div class="card p-4 rounded-xl">
+          <p class="font-bold text-primary">${p.nama}</p>
+          <p class="text-xs text-gray-400">${p.desc || 'Deskripsi produk'}</p>
+          <p class="font-bold text-primary mt-2">Rp ${p.harga.toLocaleString('id-ID')}</p>
+          <button onclick="addToCart('${p.nama}', ${p.harga})" class="btn w-full mt-3 py-2 rounded-xl text-sm">Tambah ke Keranjang</button>
+        </div>
+      `;
+      botList.innerHTML += item;
+      panelList.innerHTML += item;
     });
-  }
+  });
+}
 
-  // Tambah ke keranjang
-  function tambahKeKeranjang(nama, harga) {
-    keranjang.push({ nama, harga });
-    updateCartCount();
-  }
+// Tambah ke keranjang
+function addToCart(nama, harga) {
+  cart.push({ nama, harga });
+  updateCart();
+}
 
-  // Update jumlah keranjang
-  function updateCartCount() {
-    document.getElementById('cart-count').textContent = keranjang.length;
-  }
+// Update tampilan keranjang
+function updateCart() {
+  document.getElementById('cartCount').textContent = cart.length;
 
-  // Tampil modal keranjang
-  function tampilKeranjang() {
-    const modal = document.getElementById('cart-modal');
-    const itemsDiv = document.getElementById('cart-items');
-    itemsDiv.innerHTML = '';
-    let total = 0;
-    keranjang.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'cart-item';
-      div.innerHTML = `<span>${item.nama} - Rp ${item.harga.toLocaleString('id-ID')}</span>`;
-      itemsDiv.appendChild(div);
-      total += item.harga;
+  const cartList = document.getElementById('cartList');
+  cartList.innerHTML = '';
+  let total = 0;
+
+  cart.forEach(item => {
+    total += item.harga;
+    cartList.innerHTML += `
+      <div class="card p-3 flex justify-between items-center">
+        <div>
+          <p class="font-bold">${item.nama}</p>
+          <p class="text-xs text-gray-400">Rp ${item.harga.toLocaleString('id-ID')}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  document.getElementById('totalPrice').textContent = total.toLocaleString('id-ID');
+}
+
+// Checkout WA
+function checkoutWA() {
+  if (cart.length === 0) return alert('Keranjang kosong!');
+  let msg = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
+  cart.forEach(item => msg += `${item.nama} dengan harga ${item.harga}\n`);
+  msg = encodeURIComponent(msg);
+  window.open(`https://wa.me/62895393336779?text=${msg}`, '_blank');
+  cart = [];
+  updateCart();
+}
+
+// Checkout Telegram
+function checkoutTG() {
+  if (cart.length === 0) return alert('Keranjang kosong!');
+  let msg = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
+  cart.forEach(item => msg += `${item.nama} dengan harga ${item.harga}\n`);
+  msg = encodeURIComponent(msg);
+  window.open(`https://t.me/lordsaurus?text=${msg}`, '_blank');
+  cart = [];
+  updateCart();
+}
+
+// Tampil halaman
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Admin panel (hanya kalau nama persis {khusus:owner})
+function openAdmin() {
+  if (namaUser !== 'Owner') return alert('Akses ditolak! Hanya owner yang bisa masuk.');
+  showPage('admin');
+  renderAdmin();
+}
+
+// Render admin list
+function renderAdmin() {
+  db.ref('products').once('value').then(snapshot => {
+    const list = document.getElementById('adminProductList');
+    list.innerHTML = '';
+    const products = snapshot.val() || {};
+
+    Object.keys(products).forEach(key => {
+      const p = products[key];
+      list.innerHTML += `
+        <div class="card p-4 flex justify-between items-center">
+          <div>
+            <p class="font-bold">${p.nama}</p>
+            <p>Rp ${p.harga.toLocaleString('id-ID')}</p>
+          </div>
+          <div>
+            <button onclick="editPrice('${key}',${p.harga})" class="text-blue-400 mr-2">Edit</button>
+            <button onclick="hapusProduk('${key}')" class="text-red-500">Hapus</button>
+          </div>
+        </div>
+      `;
     });
-    document.getElementById('total-harga').textContent = total.toLocaleString('id-ID');
-    modal.classList.remove('hidden');
-  }
+  });
+}
 
-  function tutupKeranjang() {
-    document.getElementById('cart-modal').classList.add('hidden');
-  }
-
-  // Order WA
-  function orderWA() {
-    if (keranjang.length === 0) return alert('Keranjang kosong!');
-    let pesan = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
-    keranjang.forEach(item => {
-      pesan += `${item.nama} dengan harga ${item.harga}\n`;
-    });
-    pesan = encodeURIComponent(pesan);
-    window.open(`https://wa.me/62895393336779?text=${pesan}`, '_blank');
-    keranjang = [];
-    updateCartCount();
-    tutupKeranjang();
-  }
-
-  // Order Telegram
-  function orderTelegram() {
-    if (keranjang.length === 0) return alert('Keranjang kosong!');
-    let pesan = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
-    keranjang.forEach(item => {
-      pesan += `${item.nama} dengan harga ${item.harga}\n`;
-    });
-    pesan = encodeURIComponent(pesan);
-    window.open(`https://t.me/lordsaurus?text=${pesan}`, '_blank');
-    keranjang = [];
-    updateCartCount();
-    tutupKeranjang();
-  }
-
-  // Tambah produk baru (owner)
-  function tambahProduk() {
-    const nama = document.getElementById('new-nama').value.trim();
-    const harga = parseInt(document.getElementById('new-harga').value);
-    if (!nama || isNaN(harga)) return alert('Isi nama dan harga dengan benar!');
-
+// Tambah produk baru (admin)
+function tambahProduk() {
+  const nama = prompt('Nama produk baru:');
+  const harga = parseInt(prompt('Harga:'));
+  if (nama && !isNaN(harga)) {
     const id = db.ref('products').push().key;
     db.ref('products/' + id).set({ nama, harga });
-    document.getElementById('new-nama').value = '';
-    document.getElementById('new-harga').value = '';
   }
+}
 
-  // Edit produk (owner)
-  function editProduk(key, oldNama, oldHarga) {
-    const nama = prompt('Nama baru:', oldNama);
-    const harga = parseInt(prompt('Harga baru:', oldHarga));
-    if (nama && !isNaN(harga)) {
-      db.ref('products/' + key).update({ nama, harga });
-    }
-  }
+// Edit harga
+function editPrice(key, oldHarga) {
+  const harga = parseInt(prompt('Harga baru:', oldHarga));
+  if (!isNaN(harga)) db.ref('products/' + key).update({ harga });
+}
 
-  // Hapus produk (owner)
-  function hapusProduk(key) {
-    if (confirm('Yakin hapus produk ini?')) db.ref('products/' + key).remove();
-  }
+// Hapus produk
+function hapusProduk(key) {
+  if (confirm('Yakin hapus produk ini?')) db.ref('products/' + key).remove();
+}
 </script>
+
 </body>
 </html>
