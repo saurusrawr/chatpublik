@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Room Dinosaurus - By Saurus</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<!-- Login -->
+<div id="login" class="screen">
+  <div class="box">
+    <h1>Chat Room Dinosaurus</h1>
+    <p style="margin:15px 0; opacity:0.9;">By Saurus</p>
+    <input type="text" id="nama" placeholder="Nama kamu...">
+    <button onclick="masuk()">Masuk</button>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" class="screen hidden">
+  <div class="header">
+    <h2>Daftar Room</h2>
+    <button onclick="keluar()">Logout</button>
+  </div>
+  <input type="text" id="cari" placeholder="Cari nama room..." oninput="cariRoom()">
+  <button onclick="tampilBuat()">+ Buat Room Baru</button>
+  <div id="daftar-room"></div>
+</div>
+
+<!-- Form Buat Room -->
+<div id="form-buat" class="modal hidden">
+  <div class="box">
+    <h3>Buat Room Baru</h3>
+    <input type="text" id="nama-room" placeholder="Nama Room">
+    <input type="password" id="pw-room" placeholder="Password (opsional)">
+    <input type="number" id="max-anggota" placeholder="Max anggota (opsional)" min="1">
+    <label style="display:block;margin-top:15px;"><input type="checkbox" id="vip-room"> VIP Room (khusus owner)</label>
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button onclick="buatRoom()">Buat</button>
+      <button onclick="sembunyiBuat()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Room -->
+<div id="chat" class="screen hidden">
+  <div class="header">
+    <button onclick="kembali()">←</button>
+    <h2 id="nama-room-saatini">Room</h2>
+    <button id="call-btn" onclick="mulaiCall()" style="display:none;">📞 Telepon</button>
+  </div>
+  <div id="pesan-container"></div>
+  <div class="input-area">
+    <input type="text" id="input-pesan" placeholder="Ketik pesan...">
+    <button id="kirim">➤</button>
+    <label class="attach">📷 <input type="file" id="upload-gambar" accept="image/*" hidden></label>
+    <button id="rekam">🎤</button>
+  </div>
+  <div id="rekam-ui" class="hidden">
+    <span>Merekam...</span>
+    <button id="stop-rekam">Stop</button>
+  </div>
+</div>
+
+<!-- Voice Call UI -->
+<div id="call-ui" class="modal hidden">
+  <div class="box">
+    <h3>Telepon Suara</h3>
+    <p>Menghubungkan...</p>
+    <button onclick="akhiriCall()">Akhiri Panggilan</button>
+  </div>
+</div>
+
+<script type="module">
+  import { firebaseConfig } from './firebase-config.js';
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.database();
+  const storage = firebase.storage();
+
+  // ... (kode JavaScript lengkap di main.js) ...
+</script>
+<script src="main.js"></script>
+</body>
+</html>
