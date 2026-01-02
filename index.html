@@ -5,169 +5,197 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Saurus Store</title>
 
+<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <script>
-tailwind.config={theme:{extend:{colors:{
-primary:'#7c3aed',
-secondary:'#a78bfa'
-}}}}
+tailwind.config = {
+  theme:{
+    extend:{
+      colors:{
+        bg:"#050510",
+        card:"#0b0b1f",
+        glow:"#7c3aed",
+        neon:"#a855f7",
+        soft:"#c4b5fd"
+      }
+    }
+  }
+}
 </script>
 
 <style>
+body{
+  background:
+    radial-gradient(circle at top,#1e093b,#050510 70%);
+}
+.glass{
+  background:rgba(15,5,45,.75);
+  backdrop-filter: blur(12px);
+  border:1px solid rgba(168,85,247,.3)
+}
+.glow{
+  box-shadow:0 0 25px rgba(168,85,247,.45)
+}
 .page{display:none}
 .page.active{display:block}
 </style>
 </head>
 
-<body class="max-w-md mx-auto min-h-screen bg-gradient-to-b from-violet-900 to-black text-white p-4">
+<body class="text-soft max-w-md mx-auto min-h-screen pb-28">
 
 <!-- HEADER -->
-<div class="flex justify-between items-center mb-4">
+<header class="p-5 flex justify-between items-center">
   <div>
-    <h1 id="storeName" class="font-bold text-xl">Saurus Store</h1>
-    <p id="botText" class="text-sm text-violet-300">Luna AI MD v7</p>
+    <h1 class="font-extrabold text-xl text-neon">SAURUS STORE</h1>
+    <p class="text-xs opacity-70">AI DIGITAL MARKET</p>
   </div>
-  <button onclick="openAdmin()" class="text-sm bg-violet-600 px-3 py-1 rounded">OWNER</button>
-</div>
+  <button onclick="openAdmin()" class="text-neon text-xl">
+    <i class="fas fa-user-shield"></i>
+  </button>
+</header>
 
-<!-- CATEGORY -->
-<div class="grid grid-cols-2 gap-3 mb-4">
-  <button onclick="showPage('bot')" class="bg-violet-800 p-3 rounded">🤖 BOT</button>
-  <button onclick="showPage('panel')" class="bg-violet-800 p-3 rounded">⚙️ PANEL</button>
-</div>
+<!-- HERO -->
+<section class="px-5">
+  <div class="glass glow rounded-2xl p-6 text-center">
+    <p class="text-sm opacity-80">🤖 AI PRODUCT HUB</p>
+    <h2 class="text-2xl font-bold text-neon mt-1">Bot • Panel • Digital</h2>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="px-5 mt-6 grid grid-cols-2 gap-4">
+  <button onclick="showPage('bot')" class="glass p-4 rounded-xl text-left glow">
+    <p class="font-bold text-neon">🤖 BOT</p>
+    <p class="text-xs opacity-70">Luna AI MD v7</p>
+  </button>
+  <button onclick="showPage('panel')" class="glass p-4 rounded-xl text-left">
+    <p class="font-bold text-neon">⚙️ PANEL</p>
+    <p class="text-xs opacity-70">WA / Telegram</p>
+  </button>
+</section>
 
 <!-- BOT -->
-<div id="bot" class="page active space-y-2">
-  <h2 class="font-bold text-lg">🤖 Produk Bot</h2>
-  <div id="botList"></div>
-</div>
+<section id="bot" class="page active px-5 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-neon">🤖 List Bot</h2>
+  <div id="botList" class="space-y-3"></div>
+</section>
 
 <!-- PANEL -->
-<div id="panel" class="page space-y-2">
-  <h2 class="font-bold text-lg">⚙️ Produk Panel</h2>
-  <div id="panelList"></div>
-</div>
+<section id="panel" class="page px-5 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-neon">⚙️ List Panel</h2>
+  <div id="panelList" class="space-y-3"></div>
+</section>
 
 <!-- ADMIN -->
-<div id="admin" class="page space-y-3">
-  <h2 class="font-bold text-lg">🚨 OWNER PANEL</h2>
+<section id="admin" class="page px-5 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-neon">🛡 Admin Dashboard</h2>
 
-  <input id="storeInput" placeholder="Nama Toko" class="w-full p-2 rounded text-black">
-  <input id="waInput" placeholder="Nomor WA" class="w-full p-2 rounded text-black">
-  <input id="tgInput" placeholder="Username Telegram" class="w-full p-2 rounded text-black">
-  <input id="botTextInput" placeholder="Teks Bot" class="w-full p-2 rounded text-black">
+  <div class="glass p-4 rounded-xl space-y-3">
+    <input id="pname" placeholder="Nama Produk"
+      class="w-full p-2 rounded bg-bg border border-glow">
+    <input id="pdesc" placeholder="Deskripsi"
+      class="w-full p-2 rounded bg-bg border border-glow">
+    <input id="pprice" type="number" placeholder="Harga"
+      class="w-full p-2 rounded bg-bg border border-glow">
 
-  <button onclick="saveConfig()" class="bg-green-600 w-full py-2 rounded">💾 Simpan Config</button>
+    <select id="ptype" class="w-full p-2 rounded bg-bg border border-glow">
+      <option value="bot">BOT</option>
+      <option value="panel">PANEL</option>
+    </select>
 
-  <hr class="border-violet-700">
-
-  <h3 class="font-bold">➕ Tambah Produk</h3>
-  <input id="pName" placeholder="Nama Produk" class="w-full p-2 rounded text-black">
-  <input id="pDesc" placeholder="Deskripsi" class="w-full p-2 rounded text-black">
-  <input id="pPrice" placeholder="Harga" type="number" class="w-full p-2 rounded text-black">
-  <select id="pCat" class="w-full p-2 rounded text-black">
-    <option value="bot">BOT</option>
-    <option value="panel">PANEL</option>
-  </select>
-  <button onclick="addProduct()" class="bg-violet-600 w-full py-2 rounded">Tambah</button>
+    <button onclick="addProduct()"
+      class="w-full bg-neon text-black py-2 rounded-xl font-bold">
+      ➕ Tambah Produk
+    </button>
+  </div>
 
   <div id="adminList" class="space-y-2"></div>
-</div>
+</section>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
 <script>
-/* 🔥 FIREBASE */
-firebase.initializeApp({
+/* ===== CONFIG ===== */
+const ADMIN_PW="rusdev"
+const waNumber="62895393336779"
+const tgLink="https://t.me/lordsaurus"
+
+const firebaseConfig={
   apiKey:"AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
   databaseURL:"https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app"
-})
+}
+firebase.initializeApp(firebaseConfig)
 const db=firebase.database()
 
-/* CONFIG */
-const DEV_PASSWORD="rusdev"
+/* ===== ELEMENT ===== */
+const botList=document.getElementById("botList")
+const panelList=document.getElementById("panelList")
+const adminList=document.getElementById("adminList")
 
-/* PAGE */
+/* ===== PAGE ===== */
 function showPage(id){
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
-document.getElementById(id).classList.add('active')
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+  document.getElementById(id).classList.add("active")
 }
 
-/* ADMIN */
+/* ===== ADMIN LOGIN ===== */
 function openAdmin(){
-const pw=prompt("Password Owner:")
-if(pw!==DEV_PASSWORD)return alert("Salah")
-showPage('admin')
+  const pw=prompt("Password Admin:")
+  if(pw!==ADMIN_PW) return alert("Password salah")
+  showPage("admin")
 }
 
-/* CONFIG LOAD */
-db.ref('config').on('value',s=>{
-if(!s.exists())return
-const d=s.val()
-storeName.innerText=d.storeName
-botText.innerText=d.botText
-storeInput.value=d.storeName
-waInput.value=d.wa
-tgInput.value=d.telegram
-botTextInput.value=d.botText
-})
-
-function saveConfig(){
-db.ref('config').set({
-storeName:storeInput.value,
-wa:waInput.value,
-telegram:tgInput.value,
-botText:botTextInput.value
-})
-alert("Tersimpan")
-}
-
-/* PRODUK */
-function renderProducts(data){
-botList.innerHTML=''
-panelList.innerHTML=''
-adminList.innerHTML=''
-for(let id in data){
-let p=data[id]
-let card=`<div class="bg-violet-800 p-3 rounded">
-<b>${p.name}</b>
-<p class="text-sm">${p.desc}</p>
-<p class="text-green-400">Rp${p.price}</p>
-</div>`
-if(p.category==="bot")botList.innerHTML+=card
-else panelList.innerHTML+=card
-
-adminList.innerHTML+=`
-<div class="bg-black p-2 rounded border border-violet-700">
-<input value="${p.name}" onchange="edit('${id}','name',this.value)" class="w-full text-black p-1">
-<input value="${p.desc}" onchange="edit('${id}','desc',this.value)" class="w-full text-black p-1">
-<input value="${p.price}" onchange="edit('${id}','price',this.value)" class="w-full text-black p-1">
-<button onclick="del('${id}')" class="bg-red-600 w-full mt-1">Hapus</button>
-</div>`
-}
-}
-
-db.ref('products').on('value',s=>{
-if(s.exists())renderProducts(s.val())
-})
-
+/* ===== ADD ===== */
 function addProduct(){
-db.ref('products').push({
-name:pName.value,
-desc:pDesc.value,
-price:Number(pPrice.value),
-category:pCat.value
-})
+  const data={
+    name:pname.value,
+    desc:pdesc.value,
+    price:pprice.value,
+    type:ptype.value
+  }
+  db.ref("products").push(data)
+  pname.value=pdesc.value=pprice.value=""
 }
 
-function edit(id,k,v){
-db.ref('products/'+id+'/'+k).set(v)
-}
-
+/* ===== DELETE ===== */
 function del(id){
-if(confirm("Hapus?"))db.ref('products/'+id).remove()
+  if(confirm("Hapus produk?")){
+    db.ref("products/"+id).remove()
+  }
 }
+
+/* ===== RENDER ===== */
+db.ref("products").on("value",s=>{
+  botList.innerHTML=""
+  panelList.innerHTML=""
+  adminList.innerHTML=""
+
+  s.forEach(d=>{
+    const p=d.val()
+    const card=`
+      <div class="glass p-4 rounded-xl">
+        <p class="font-bold text-neon">${p.name}</p>
+        <p class="text-xs opacity-70">${p.desc}</p>
+        <p class="font-bold mt-1">Rp${p.price}</p>
+        <a href="https://wa.me/${waNumber}" target="_blank"
+          class="block mt-2 text-center bg-neon text-black py-1 rounded-lg font-bold">
+          Order
+        </a>
+      </div>`
+    if(p.type==="bot") botList.innerHTML+=card
+    else panelList.innerHTML+=card
+
+    adminList.innerHTML+=`
+      <div class="glass p-3 rounded flex justify-between items-center">
+        <span>${p.name}</span>
+        <button onclick="del('${d.key}')" class="text-red-400">Hapus</button>
+      </div>`
+  })
+})
 </script>
 
 </body>
