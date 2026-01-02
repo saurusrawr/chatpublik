@@ -9,28 +9,31 @@
   <style>
     body { 
       margin: 0; font-family: system-ui, sans-serif; 
-      background: #0d1117; color: #c9d1d9; min-height: 100vh; 
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); 
+      color: #e0e0e0; min-height: 100vh; 
       overflow-y: auto; 
     }
     .container { padding: 15px; max-width: 100%; margin: 0 auto; }
-    h1 { text-align: center; margin: 20px 0; font-size: 2.2rem; color: #58a6ff; }
-    .input-box { margin: 20px 0; text-align: center; }
-    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 10px; border: 1px solid #30363d; background: #161b22; color: #eee; }
-    button { width: 90%; padding: 15px; margin: 10px 0; background: #21262d; color: #58a6ff; border: 1px solid #30363d; border-radius: 10px; font-size: 1.1rem; cursor: pointer; }
-    .product-list { display: flex; flex-direction: column; gap: 15px; }
-    .product { background: #161b22; padding: 15px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #58a6ff; }
-    .product p { margin: 5px 0; color: #8b949e; }
-    .buy-btn { background: #238636; color: white; padding: 12px; border: none; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-    .cart-icon { position: fixed; top: 15px; right: 15px; background: #21262d; color: #58a6ff; padding: 10px 15px; border-radius: 50%; font-size: 1.2rem; border: 2px solid #30363d; cursor: pointer; z-index: 100; display: flex; align-items: center; gap: 5px; }
-    .cart-count { background: #58a6ff; color: #000; border-radius: 50%; padding: 5px 10px; font-size: 0.9rem; }
-    .cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; padding: 20px; z-index: 99; overflow-y: auto; }
+    h1 { text-align: center; margin: 20px 0; font-size: 2.5rem; color: #00d4ff; text-shadow: 0 0 15px #00d4ff; }
+    .input-box { margin: 30px 0; text-align: center; }
+    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 12px; border: 2px solid #00d4ff; background: rgba(255,255,255,0.05); color: white; box-shadow: 0 0 10px rgba(0,212,255,0.3); }
+    button { width: 90%; padding: 15px; margin: 10px 0; background: #00d4ff; color: #000; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 0 15px rgba(0,212,255,0.5); transition: all .3s; }
+    button:hover { transform: scale(1.03); box-shadow: 0 0 25px rgba(0,212,255,0.8); }
+    .product-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .product { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid #00d4ff; box-shadow: 0 5px 15px rgba(0,212,255,0.2); }
+    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #00d4ff; }
+    .product p { margin: 5px 0; color: #aaa; }
+    .buy-btn { background: #00b894; color: white; padding: 12px; border: none; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+    .cart-icon { position: fixed; top: 15px; right: 15px; background: #0d1117; color: #00d4ff; padding: 12px 16px; border-radius: 50%; font-size: 1.4rem; border: 2px solid #00d4ff; cursor: pointer; z-index: 100; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(0,212,255,0.4); }
+    .cart-count { background: #00d4ff; color: #000; border-radius: 50%; padding: 6px 10px; font-size: 1rem; font-weight: bold; }
+    .cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; flex-direction: column; padding: 20px; z-index: 99; overflow-y: auto; }
     .cart-modal.hidden { display: none; }
-    .cart-item { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
-    .order-btn { width: 100%; padding: 15px; margin-top: 20px; background: #238636; color: white; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; }
-    .admin-section { background: #161b22; padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #58a6ff; }
+    .cart-item { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #00d4ff; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+    .order-btn { width: 100%; padding: 15px; margin-top: 20px; background: #00d4ff; color: #000; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; box-shadow: 0 0 15px rgba(0,212,255,0.5); }
+    .admin-section { background: rgba(0,212,255,0.1); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.3); }
     .admin-input { margin: 10px 0; }
-    .admin-btn { background: #21262d; color: #58a6ff; border: 1px solid #58a6ff; }
+    .admin-btn { background: #21262d; color: #00d4ff; border: 1px solid #00d4ff; }
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
@@ -71,8 +74,11 @@
     <div id="cart-modal" class="cart-modal hidden">
       <h2>Keranjang Belanja</h2>
       <div id="cart-items"></div>
+      <div style="margin-top:20px;text-align:right;font-size:1.2rem;">
+        Total: Rp <span id="total-harga">0</span>
+      </div>
       <button class="order-btn" onclick="orderWA()">Order via WhatsApp</button>
-      <button class="order-btn" onclick="orderTelegram()">Order via Telegram</button>
+      <button class="order-btn" style="background:#1e90ff;" onclick="orderTelegram()">Order via Telegram</button>
       <button style="margin-top:10px;background:#e74c3c;" onclick="tutupKeranjang()">Tutup</button>
     </div>
   </div>
@@ -96,14 +102,14 @@
 
   let namaUser = '';
   let isOwner = false;
-  let keranjang = []; // array lokal untuk keranjang
+  let keranjang = [];
 
   // Login
   function masuk() {
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Owner mode hanya kalau nama PERSIS {khusus:owner}
+    // Admin panel hanya kalau nama PERSIS {khusus:owner}
     isOwner = namaUser === '{khusus:owner}';
     if (isOwner) namaUser = 'Owner';
 
@@ -117,7 +123,7 @@
     if (isOwner) document.getElementById('admin-panel').classList.remove('hidden');
   }
 
-  // Tampil daftar produk dari Firebase
+  // Tampil produk
   function tampilProduk() {
     db.ref('products').on('value', snapshot => {
       const list = document.getElementById('product-list');
@@ -154,13 +160,13 @@
     });
   }
 
-  // Tambah ke keranjang lokal
+  // Tambah ke keranjang
   function tambahKeKeranjang(nama, harga) {
     keranjang.push({ nama, harga });
     updateCartCount();
   }
 
-  // Update jumlah di ikon keranjang
+  // Update jumlah keranjang
   function updateCartCount() {
     document.getElementById('cart-count').textContent = keranjang.length;
   }
@@ -170,11 +176,15 @@
     const modal = document.getElementById('cart-modal');
     const itemsDiv = document.getElementById('cart-items');
     itemsDiv.innerHTML = '';
+    let total = 0;
     keranjang.forEach(item => {
       const div = document.createElement('div');
-      div.innerHTML = `<p>${item.nama} - Rp ${item.harga.toLocaleString('id-ID')}</p>`;
+      div.className = 'cart-item';
+      div.innerHTML = `<span>${item.nama} - Rp ${item.harga.toLocaleString('id-ID')}</span>`;
       itemsDiv.appendChild(div);
+      total += item.harga;
     });
+    document.getElementById('total-harga').textContent = total.toLocaleString('id-ID');
     modal.classList.remove('hidden');
   }
 
@@ -191,7 +201,7 @@
     });
     pesan = encodeURIComponent(pesan);
     window.open(`https://wa.me/62895393336779?text=${pesan}`, '_blank');
-    keranjang = []; // kosongkan keranjang setelah order
+    keranjang = [];
     updateCartCount();
     tutupKeranjang();
   }
