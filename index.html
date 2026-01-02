@@ -126,7 +126,7 @@
 </div>
 
 <script>
-// Firebase Config
+// Firebase Config (khusus untuk produk & custom nama bot)
 const firebaseConfig = {
   apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
   authDomain: "saurusproject-6974b.firebaseapp.com",
@@ -172,12 +172,7 @@ function logout() {
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('login').style.display = 'block';
     document.getElementById('nama').value = '';
-    // Clear Firebase auth
-    firebase.auth().signOut().then(() => {
-      location.reload(true); // force reload tanpa cache
-    }).catch(() => {
-      location.reload(true);
-    });
+    location.reload(true); // reload tanpa cache
   }
 }
 
