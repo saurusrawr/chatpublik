@@ -6,180 +6,167 @@
 <title>Saurus Store</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-tailwind.config={
-  theme:{extend:{
-    colors:{
-      primary:'#7c3aed',
-      secondary:'#a78bfa',
-      text:'#1e1b4b',
-      soft:'#6d28d9',
-      border:'#ddd6fe'
-    }
-  }}
-}
+tailwind.config={theme:{extend:{colors:{
+primary:'#7c3aed',
+secondary:'#a78bfa'
+}}}}
 </script>
 
 <style>
-body{background:linear-gradient(180deg,#ede9fe,#faf5ff)}
-.card{background:#fff;border:1px solid #ddd6fe}
-.btn{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
 .page{display:none}
 .page.active{display:block}
 </style>
 </head>
 
-<body class="max-w-md mx-auto min-h-screen pb-28 text-text">
+<body class="max-w-md mx-auto min-h-screen bg-gradient-to-b from-violet-900 to-black text-white p-4">
 
 <!-- HEADER -->
-<header class="flex justify-between items-center p-4">
-  <div class="flex items-center gap-3">
-    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
-      <i class="fas fa-store"></i>
-    </div>
-    <div>
-      <p id="storeName" class="font-bold text-primary">Saurus Store</p>
-      <p id="subtitle" class="text-xs text-soft">DIGITAL MARKET</p>
-    </div>
+<div class="flex justify-between items-center mb-4">
+  <div>
+    <h1 id="storeName" class="font-bold text-xl">Saurus Store</h1>
+    <p id="botText" class="text-sm text-violet-300">Luna AI MD v7</p>
   </div>
+  <button onclick="openAdmin()" class="text-sm bg-violet-600 px-3 py-1 rounded">OWNER</button>
+</div>
 
-  <div class="flex gap-4">
-    <button onclick="showPage('cart')" class="relative text-primary">
-      <i class="fas fa-shopping-cart text-xl"></i>
-      <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
-    </button>
-    <button onclick="openAdmin()" class="text-primary">
-      <i class="fas fa-user-shield text-xl"></i>
-    </button>
-  </div>
-</header>
+<!-- CATEGORY -->
+<div class="grid grid-cols-2 gap-3 mb-4">
+  <button onclick="showPage('bot')" class="bg-violet-800 p-3 rounded">🤖 BOT</button>
+  <button onclick="showPage('panel')" class="bg-violet-800 p-3 rounded">⚙️ PANEL</button>
+</div>
 
-<!-- LIST -->
-<section id="list" class="page active px-4 mt-4 space-y-3">
-  <h2 class="font-bold text-lg text-primary">🛒 Daftar Produk</h2>
-  <div id="productList" class="space-y-3"></div>
-</section>
+<!-- BOT -->
+<div id="bot" class="page active space-y-2">
+  <h2 class="font-bold text-lg">🤖 Produk Bot</h2>
+  <div id="botList"></div>
+</div>
 
-<!-- CART -->
-<section id="cart" class="page px-4 mt-4 space-y-3">
-  <h2 class="font-bold text-lg text-primary">🧾 Keranjang</h2>
-  <div id="cartList"></div>
-  <div class="card p-3 font-bold">Total: <span id="totalPrice">Rp0</span></div>
-  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">Order WhatsApp</button>
-  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary">Order Telegram</button>
-</section>
+<!-- PANEL -->
+<div id="panel" class="page space-y-2">
+  <h2 class="font-bold text-lg">⚙️ Produk Panel</h2>
+  <div id="panelList"></div>
+</div>
 
 <!-- ADMIN -->
-<section id="admin" class="page px-4 mt-4 space-y-3">
-  <h2 class="font-bold text-lg text-primary">👑 Admin Panel</h2>
+<div id="admin" class="page space-y-3">
+  <h2 class="font-bold text-lg">🚨 OWNER PANEL</h2>
 
-  <input id="newName" placeholder="Nama Produk" class="card p-2 w-full rounded">
-  <input id="newPrice" placeholder="Harga" type="number" class="card p-2 w-full rounded">
-  <button onclick="addProduct()" class="btn w-full py-2 rounded">Tambah Produk</button>
+  <input id="storeInput" placeholder="Nama Toko" class="w-full p-2 rounded text-black">
+  <input id="waInput" placeholder="Nomor WA" class="w-full p-2 rounded text-black">
+  <input id="tgInput" placeholder="Username Telegram" class="w-full p-2 rounded text-black">
+  <input id="botTextInput" placeholder="Teks Bot" class="w-full p-2 rounded text-black">
 
-  <hr>
-  <h3 class="font-bold text-primary">⚙️ Config</h3>
-  <input id="confName" placeholder="Nama Toko" class="card p-2 w-full rounded">
-  <input id="confWA" placeholder="Nomor WA" class="card p-2 w-full rounded">
-  <input id="confTG" placeholder="Link Telegram" class="card p-2 w-full rounded">
-  <button onclick="saveConfig()" class="btn w-full py-2 rounded">Simpan Config</button>
-</section>
+  <button onclick="saveConfig()" class="bg-green-600 w-full py-2 rounded">💾 Simpan Config</button>
+
+  <hr class="border-violet-700">
+
+  <h3 class="font-bold">➕ Tambah Produk</h3>
+  <input id="pName" placeholder="Nama Produk" class="w-full p-2 rounded text-black">
+  <input id="pDesc" placeholder="Deskripsi" class="w-full p-2 rounded text-black">
+  <input id="pPrice" placeholder="Harga" type="number" class="w-full p-2 rounded text-black">
+  <select id="pCat" class="w-full p-2 rounded text-black">
+    <option value="bot">BOT</option>
+    <option value="panel">PANEL</option>
+  </select>
+  <button onclick="addProduct()" class="bg-violet-600 w-full py-2 rounded">Tambah</button>
+
+  <div id="adminList" class="space-y-2"></div>
+</div>
 
 <script>
-/* ===== FIREBASE ===== */
+/* 🔥 FIREBASE */
 firebase.initializeApp({
   apiKey:"AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
   databaseURL:"https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app"
 })
 const db=firebase.database()
 
-/* ===== CONFIG ===== */
-const ADMIN_PW="rusdev"
-let config={}, products={}, cart=[]
+/* CONFIG */
+const DEV_PASSWORD="rusdev"
 
-/* ===== LOAD ===== */
-db.ref("config").on("value",s=>{
-  config=s.val()||{}
-  storeName.innerText=config.storeName||"Saurus Store"
-  subtitle.innerText=config.subtitle||"DIGITAL MARKET"
-})
-db.ref("products").on("value",s=>{
-  products=s.val()||{}
-  render()
-})
-
-/* ===== RENDER ===== */
-function render(){
-  productList.innerHTML=""
-  Object.keys(products).forEach(id=>{
-    const p=products[id]
-    productList.innerHTML+=`
-    <div class="card p-3 rounded-xl flex justify-between items-center">
-      <div>
-        <p class="font-bold">${p.name}</p>
-        <p class="text-sm text-soft">Rp${p.price}</p>
-      </div>
-      <button onclick="addCart('${id}')" class="btn px-3 py-1 rounded">+</button>
-    </div>`
-  })
-}
-
-/* ===== CART ===== */
-function addCart(id){
-  cart.push(products[id])
-  cartCount.innerText=cart.length
-  updateCart()
-}
-function updateCart(){
-  cartList.innerHTML=""
-  let total=0
-  cart.forEach(p=>{
-    total+=Number(p.price)
-    cartList.innerHTML+=`<div class="card p-2">${p.name} - Rp${p.price}</div>`
-  })
-  totalPrice.innerText="Rp"+total
-}
-
-/* ===== CHECKOUT ===== */
-function checkoutWA(){
-  location.href=`https://wa.me/${config.wa}?text=Order:${cart.map(p=>p.name).join(", ")}`
-}
-function checkoutTG(){
-  location.href=config.telegram
-}
-
-/* ===== ADMIN ===== */
-function openAdmin(){
-  const pw=prompt("Password Admin:")
-  if(pw===ADMIN_PW) showPage("admin")
-  else alert("Password salah")
-}
-function addProduct(){
-  const id=Date.now()
-  db.ref("products/"+id).set({
-    name:newName.value,
-    price:newPrice.value
-  })
-}
-function saveConfig(){
-  db.ref("config").set({
-    storeName:confName.value,
-    wa:confWA.value,
-    telegram:confTG.value,
-    subtitle:"DIGITAL MARKET"
-  })
-}
-
-/* ===== UTIL ===== */
+/* PAGE */
 function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
-  document.getElementById(id).classList.add("active")
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+document.getElementById(id).classList.add('active')
+}
+
+/* ADMIN */
+function openAdmin(){
+const pw=prompt("Password Owner:")
+if(pw!==DEV_PASSWORD)return alert("Salah")
+showPage('admin')
+}
+
+/* CONFIG LOAD */
+db.ref('config').on('value',s=>{
+if(!s.exists())return
+const d=s.val()
+storeName.innerText=d.storeName
+botText.innerText=d.botText
+storeInput.value=d.storeName
+waInput.value=d.wa
+tgInput.value=d.telegram
+botTextInput.value=d.botText
+})
+
+function saveConfig(){
+db.ref('config').set({
+storeName:storeInput.value,
+wa:waInput.value,
+telegram:tgInput.value,
+botText:botTextInput.value
+})
+alert("Tersimpan")
+}
+
+/* PRODUK */
+function renderProducts(data){
+botList.innerHTML=''
+panelList.innerHTML=''
+adminList.innerHTML=''
+for(let id in data){
+let p=data[id]
+let card=`<div class="bg-violet-800 p-3 rounded">
+<b>${p.name}</b>
+<p class="text-sm">${p.desc}</p>
+<p class="text-green-400">Rp${p.price}</p>
+</div>`
+if(p.category==="bot")botList.innerHTML+=card
+else panelList.innerHTML+=card
+
+adminList.innerHTML+=`
+<div class="bg-black p-2 rounded border border-violet-700">
+<input value="${p.name}" onchange="edit('${id}','name',this.value)" class="w-full text-black p-1">
+<input value="${p.desc}" onchange="edit('${id}','desc',this.value)" class="w-full text-black p-1">
+<input value="${p.price}" onchange="edit('${id}','price',this.value)" class="w-full text-black p-1">
+<button onclick="del('${id}')" class="bg-red-600 w-full mt-1">Hapus</button>
+</div>`
+}
+}
+
+db.ref('products').on('value',s=>{
+if(s.exists())renderProducts(s.val())
+})
+
+function addProduct(){
+db.ref('products').push({
+name:pName.value,
+desc:pDesc.value,
+price:Number(pPrice.value),
+category:pCat.value
+})
+}
+
+function edit(id,k,v){
+db.ref('products/'+id+'/'+k).set(v)
+}
+
+function del(id){
+if(confirm("Hapus?"))db.ref('products/'+id).remove()
 }
 </script>
 
