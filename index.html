@@ -146,14 +146,14 @@ function masuk() {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('user-name').textContent = namaUser;
 
-  // Admin panel hanya kalau owner
+  // Tampil admin panel hanya kalau owner
   if (isOwner) document.getElementById('admin').classList.add('active');
 
   renderProduk();
   updateCart();
 }
 
-// Logout (kembali ke login)
+// Logout (kembali ke login + bersihkan cache)
 function logout() {
   if (confirm('Yakin logout?')) {
     cart = []; // kosongkan keranjang
@@ -161,6 +161,10 @@ function logout() {
     document.getElementById('dashboard').style.display = 'none';
     document.getElementById('login').style.display = 'block';
     document.getElementById('nama').value = '';
+    // Clear Firebase auth
+    firebase.auth().signOut().then(() => {
+      location.reload(); // reload total untuk bersihkan cache
+    });
   }
 }
 
@@ -233,8 +237,7 @@ function updateCart() {
 // Checkout WA
 function checkoutWA() {
   if (cart.length === 0) return alert('Keranjang kosong!');
-  let msg = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
-  cart.forEach(item => msg += `${item.nama} dengan harga ${item.harga}\n`);
+  let msg = `Hai saurus aku ${namaUser} ingin membeli produk ${cart.map(item => item.nama).join(', ')} dengan harga ${cart.map(item => item.harga).join(', ')}`;
   msg = encodeURIComponent(msg);
   window.open(`https://wa.me/62895393336779?text=${msg}`, '_blank');
   cart = [];
@@ -244,8 +247,7 @@ function checkoutWA() {
 // Checkout Telegram
 function checkoutTG() {
   if (cart.length === 0) return alert('Keranjang kosong!');
-  let msg = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
-  cart.forEach(item => msg += `${item.nama} dengan harga ${item.harga}\n`);
+  let msg = `Hai saurus aku ${namaUser} ingin membeli produk ${cart.map(item => item.nama).join(', ')} dengan harga ${cart.map(item => item.harga).join(', ')}`;
   msg = encodeURIComponent(msg);
   window.open(`https://t.me/lordsaurus?text=${msg}`, '_blank');
   cart = [];
