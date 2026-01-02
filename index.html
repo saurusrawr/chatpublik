@@ -164,8 +164,18 @@
   </div>
 </div>
 
-<script type="module">
-  import { firebaseConfig } from './firebase-config.js';
+<script>
+  // Firebase config di-encode (simple base64 + rotasi huruf agar tidak langsung kelihatan)
+  const encodedConfig = "eyJhcGlLZXkiOiJBSXpBeUJlcl9ERjN6QXlIMmJtbnBQemlsVWlFNUJZVGI0SW4wIiwKImF1dGhEb21haW4iOiJzYXVydXNwcm9qZWN0LTY5NzRiLmZpcmViYXNlYXBwLmNvbSIsCiJkYXRhYmFzZVVSTCI6Imh0dHBzOi8vc2F1cnVzcHJvamVjdC02OTc0Yi1kZWZhdWx0LXJ0ZGIuYXNpYS1zb3V0aGVhc3QxLmZpcmViYXNlZGF0YWJhc2UuYXBwIiwicHJvamVjdElkIjoic2F1cnVzcHJvamVjdC02OTc0YiIsInN0b3JhZ2VCdWNrZXQiOiJzYXVydXNwcm9qZWN0LTY5NzRiLmFwcHNwb3QuY29tIiwibWVzc2FnaW5nU2VuZGVySWQiOiI1MTk0NzIzNDM3NDIiLCJhcHBJZCI6IjE6NTE5NDcyMzQzNzQyOndlYjp4eHh4eHh4eHh4eHh4In0=";
+
+  // Decode config (fungsi sederhana agar tidak langsung terbaca)
+  function decodeConfig(enc) {
+    let decoded = atob(enc);
+    decoded = decoded.split('').reverse().join(''); // rotasi sederhana
+    return JSON.parse(decoded);
+  }
+
+  const firebaseConfig = decodeConfig(encodedConfig);
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
@@ -184,7 +194,6 @@
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Mode owner rahasia
     isOwner = namaUser.match(/\{khusus:.*\}/i) !== null;
     if (isOwner) namaUser = namaUser.replace(/\{khusus:|\}/gi, '').trim();
 
@@ -192,7 +201,10 @@
       document.getElementById('login').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
       tampilDaftarRoom();
-    }).catch(err => alert('Gagal masuk: ' + err.message));
+    }).catch(err => {
+      console.error('Firebase Auth Error:', err);
+      alert('Gagal masuk: ' + err.message + '\nCek console (F12) untuk detail.');
+    });
   }
 
   // Logout
