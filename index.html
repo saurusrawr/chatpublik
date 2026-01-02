@@ -3,28 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Saurus Store - Horor Edition</title>
+  <title>Saurus Store</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <style>
     body { 
-      margin: 0; font-family: 'Poppins', sans-serif; 
-      background: #000; color: #ccc; min-height: 100vh; 
+      margin: 0; font-family: system-ui, sans-serif; 
+      background: #0d1117; color: #c9d1d9; min-height: 100vh; 
       overflow-y: auto; 
     }
     .container { padding: 15px; max-width: 100%; margin: 0 auto; }
-    h1 { text-align: center; margin: 20px 0; font-size: 2.2rem; color: #ff0000; text-shadow: 0 0 10px #ff0000; font-family: 'Creepster', cursive; }
+    h1 { text-align: center; margin: 20px 0; font-size: 2.2rem; color: #58a6ff; }
     .input-box { margin: 20px 0; text-align: center; }
-    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #eee; }
-    button { width: 90%; padding: 15px; margin: 10px 0; background: #222; color: #ff0000; border: 1px solid #ff0000; border-radius: 10px; font-size: 1.1rem; cursor: pointer; }
+    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 10px; border: 1px solid #30363d; background: #161b22; color: #eee; }
+    button { width: 90%; padding: 15px; margin: 10px 0; background: #21262d; color: #58a6ff; border: 1px solid #30363d; border-radius: 10px; font-size: 1.1rem; cursor: pointer; }
     .product-list { display: flex; flex-direction: column; gap: 15px; }
-    .product { background: #111; padding: 15px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 0 10px #000; }
-    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #ff6666; }
-    .product p { margin: 5px 0; color: #aaa; }
-    .buy-btn { background: #000; color: #ff0000; padding: 12px; border: 1px solid #ff0000; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-    .admin-section { background: #000; padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #ff0000; }
+    .product { background: #161b22; padding: 15px; border-radius: 15px; border: 1px solid #30363d; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #58a6ff; }
+    .product p { margin: 5px 0; color: #8b949e; }
+    .buy-btn { background: #238636; color: white; padding: 12px; border: none; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+    .cart-icon { position: fixed; top: 15px; right: 15px; background: #21262d; color: #58a6ff; padding: 10px 15px; border-radius: 50%; font-size: 1.2rem; border: 2px solid #30363d; cursor: pointer; z-index: 100; display: flex; align-items: center; gap: 5px; }
+    .cart-count { background: #58a6ff; color: #000; border-radius: 50%; padding: 5px 10px; font-size: 0.9rem; }
+    .cart-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; padding: 20px; z-index: 99; overflow-y: auto; }
+    .cart-modal.hidden { display: none; }
+    .cart-item { background: #161b22; padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid #30363d; display: flex; justify-content: space-between; align-items: center; }
+    .order-btn { width: 100%; padding: 15px; margin-top: 20px; background: #238636; color: white; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; }
+    .admin-section { background: #161b22; padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #58a6ff; }
     .admin-input { margin: 10px 0; }
-    .admin-btn { background: #111; color: #ff6666; border: 1px solid #ff6666; }
+    .admin-btn { background: #21262d; color: #58a6ff; border: 1px solid #58a6ff; }
   </style>
 </head>
 <body>
@@ -40,27 +46,41 @@
     </div>
   </div>
 
-  <!-- Dashboard Produk -->
+  <!-- Dashboard & Keranjang -->
   <div id="dashboard" class="hidden">
     <h1>Selamat Datang, <span id="user-name"></span>!</h1>
     <h2>Daftar Produk</h2>
     <div id="product-list" class="product-list"></div>
 
-    <!-- Admin Panel (hanya owner) -->
+    <!-- Admin Panel (hanya kalau nama persis {khusus:owner}) -->
     <div id="admin-panel" class="admin-section hidden">
-      <h3>Admin Panel (Owner)</h3>
+      <h3>Admin Panel</h3>
       <div class="admin-input">
         <input type="text" id="new-nama" placeholder="Nama Produk">
         <input type="number" id="new-harga" placeholder="Harga (contoh: 5000)">
         <button class="admin-btn" onclick="tambahProduk()">Tambah Produk</button>
       </div>
     </div>
+
+    <!-- Ikon Keranjang -->
+    <div class="cart-icon" onclick="tampilKeranjang()">
+      🛒 <span id="cart-count" class="cart-count">0</span>
+    </div>
+
+    <!-- Modal Keranjang -->
+    <div id="cart-modal" class="cart-modal hidden">
+      <h2>Keranjang Belanja</h2>
+      <div id="cart-items"></div>
+      <button class="order-btn" onclick="orderWA()">Order via WhatsApp</button>
+      <button class="order-btn" onclick="orderTelegram()">Order via Telegram</button>
+      <button style="margin-top:10px;background:#e74c3c;" onclick="tutupKeranjang()">Tutup</button>
+    </div>
   </div>
 
 </div>
 
 <script>
-  // Firebase config langsung
+  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
     authDomain: "saurusproject-6974b.firebaseapp.com",
@@ -68,7 +88,7 @@
     projectId: "saurusproject-6974b",
     storageBucket: "saurusproject-6974b.appspot.com",
     messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya appId web
+    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -76,13 +96,14 @@
 
   let namaUser = '';
   let isOwner = false;
+  let keranjang = []; // array lokal untuk keranjang
 
   // Login
   function masuk() {
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Cek owner mode rahasia (hanya kalau persis {khusus:owner})
+    // Owner mode hanya kalau nama PERSIS {khusus:owner}
     isOwner = namaUser === '{khusus:owner}';
     if (isOwner) namaUser = 'Owner';
 
@@ -92,7 +113,7 @@
 
     tampilProduk();
 
-    // Tampil admin panel kalau owner
+    // Tampil admin panel hanya kalau owner
     if (isOwner) document.getElementById('admin-panel').classList.remove('hidden');
   }
 
@@ -110,7 +131,7 @@
         div.innerHTML = `
           <h3>${p.nama}</h3>
           <p>Harga: Rp ${p.harga.toLocaleString('id-ID')}</p>
-          <button class="buy-btn" onclick="beli('${p.nama}', ${p.harga})">Beli Sekarang</button>
+          <button class="buy-btn" onclick="tambahKeKeranjang('${p.nama}', ${p.harga})">Tambah ke Keranjang</button>
         `;
 
         if (isOwner) {
@@ -133,13 +154,60 @@
     });
   }
 
-  // Beli produk → pilih WA/Telegram
-  function beli(namaProduk, harga) {
-    const pilihan = confirm('Pilih metode:\nOK = WhatsApp\nCancel = Telegram');
-    const nomor = pilihan ? '62895393336779' : 'lordsaurus'; // Telegram username
-    const app = pilihan ? 'https://wa.me/' : 'https://t.me/';
-    const pesan = encodeURIComponent(`Hai saurus Aku ${namaUser} Ingin membeli\n${namaProduk} dengan harga ${harga}`);
-    window.open(`${app}${nomor}?text=${pesan}`, '_blank');
+  // Tambah ke keranjang lokal
+  function tambahKeKeranjang(nama, harga) {
+    keranjang.push({ nama, harga });
+    updateCartCount();
+  }
+
+  // Update jumlah di ikon keranjang
+  function updateCartCount() {
+    document.getElementById('cart-count').textContent = keranjang.length;
+  }
+
+  // Tampil modal keranjang
+  function tampilKeranjang() {
+    const modal = document.getElementById('cart-modal');
+    const itemsDiv = document.getElementById('cart-items');
+    itemsDiv.innerHTML = '';
+    keranjang.forEach(item => {
+      const div = document.createElement('div');
+      div.innerHTML = `<p>${item.nama} - Rp ${item.harga.toLocaleString('id-ID')}</p>`;
+      itemsDiv.appendChild(div);
+    });
+    modal.classList.remove('hidden');
+  }
+
+  function tutupKeranjang() {
+    document.getElementById('cart-modal').classList.add('hidden');
+  }
+
+  // Order WA
+  function orderWA() {
+    if (keranjang.length === 0) return alert('Keranjang kosong!');
+    let pesan = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
+    keranjang.forEach(item => {
+      pesan += `${item.nama} dengan harga ${item.harga}\n`;
+    });
+    pesan = encodeURIComponent(pesan);
+    window.open(`https://wa.me/62895393336779?text=${pesan}`, '_blank');
+    keranjang = []; // kosongkan keranjang setelah order
+    updateCartCount();
+    tutupKeranjang();
+  }
+
+  // Order Telegram
+  function orderTelegram() {
+    if (keranjang.length === 0) return alert('Keranjang kosong!');
+    let pesan = `Hai saurus Aku ${namaUser} Ingin membeli\n`;
+    keranjang.forEach(item => {
+      pesan += `${item.nama} dengan harga ${item.harga}\n`;
+    });
+    pesan = encodeURIComponent(pesan);
+    window.open(`https://t.me/lordsaurus?text=${pesan}`, '_blank');
+    keranjang = [];
+    updateCartCount();
+    tutupKeranjang();
   }
 
   // Tambah produk baru (owner)
