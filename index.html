@@ -82,13 +82,13 @@
     .pesan { max-width: 80%; padding: 12px 18px; border-radius: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
     .pesan.kirim { background: var(--dino-green); align-self: flex-end; }
     .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
-    .pesan .pengirim { font-size: 1rem; opacity: 0.85; display: block; margin-bottom: 6px; }
+    .pesan .pengirim { font-size: 1.1rem; opacity: 0.9; display: block; margin-bottom: 6px; font-family: 'Creepster', cursive; }
     .pesan img { max-width: 100%; border-radius: 14px; margin-top: 8px; }
     .pesan audio { margin-top: 8px; width: 100%; max-width: 340px; }
     .owner-badge { 
       background: linear-gradient(45deg, var(--owner-gold), #FFA500);
-      color: #000; font-size: 1rem; padding: 5px 14px; border-radius: 20px; 
-      margin-left: 12px; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.3); 
+      color: #000; font-size: 1.2rem; padding: 5px 14px; border-radius: 20px; 
+      margin-left: 12px; font-weight: bold; font-family: 'Creepster', cursive; 
       box-shadow: 0 3px 12px rgba(255,215,0,0.7); animation: glow 2s infinite alternate;
     }
 
@@ -176,7 +176,7 @@
     projectId: "saurusproject-6974b",
     storageBucket: "saurusproject-6974b.appspot.com",
     messagingSenderId: "519472343742",
-    appId: "1:519472343742:android:59523cb9e738c479980cef" // isi kalau ada appId web
+    appId: "1:519472343742:android:59523cb9e738c479980cef" // Ganti kalau punya appId web dari Firebase
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -318,7 +318,9 @@
     div.className = `pesan ${msg.pengirim === namaUser ? 'kirim' : 'terima'}`;
 
     let pengirim = msg.pengirim;
-    if (msg.pengirim.includes('{khusus:saurus}')) pengirim += ' <span class="owner-badge">OWNER</span>';
+    if (msg.pengirim.includes('{khusus:saurus}')) {
+      pengirim += ' <span class="owner-badge">OWNER</span>';
+    }
 
     let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
     
