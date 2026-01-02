@@ -3,27 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Dinosaurus - By Saurus</title>
+  <title>Chat Horor - By Saurus</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&display=swap');
 
     :root {
-      --dino-green: #1e8449;
-      --earth-brown: #8B4513;
-      --dark-jungle: #0f2b1e;
-      --light-leaf: #90EE90;
+      --horror-red: #8B0000;
+      --dark-blood: #1a0000;
+      --ghost-white: #f8f8ff;
       --owner-gold: #FFD700;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
     body { 
-      font-family: 'Creepster', cursive;
-      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center/cover fixed;
-      color: var(--light-leaf);
+      font-family: 'Nosifer', cursive;
+      background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center/cover fixed;
+      color: var(--ghost-white);
       min-height: 100vh;
       background-attachment: fixed;
       overflow: hidden;
@@ -32,62 +31,60 @@
 
     .overlay { 
       position: fixed; inset: 0; 
-      background: linear-gradient(to bottom, rgba(30,132,73,0.6), rgba(15,43,30,0.8));
+      background: linear-gradient(to bottom, rgba(139,0,0,0.5), rgba(26,0,0,0.9));
       pointer-events: none;
       z-index: -1;
-      animation: jungleBreath 20s infinite alternate;
+      animation: bloodPulse 8s infinite alternate;
     }
 
-    @keyframes jungleBreath {
+    @keyframes bloodPulse {
       0% { opacity: 0.6; }
       100% { opacity: 0.9; }
     }
 
-    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .6s; animation: roarIn 1.5s; }
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .6s; animation: hauntIn 2s; }
     .screen.hidden { opacity: 0; pointer-events: none; }
 
-    @keyframes roarIn {
-      0% { opacity: 0; transform: scale(0.9); }
-      100% { opacity: 1; transform: scale(1); }
+    @keyframes hauntIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .box { 
-      background: rgba(30,132,73,0.6);
+      background: rgba(139,0,0,0.6);
       backdrop-filter: blur(15px);
       padding: 50px 40px;
-      border-radius: 30px;
+      border-radius: 20px;
       max-width: 480px;
       width: 90%;
       margin: auto;
       text-align: center;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.7);
-      border: 3px solid var(--dino-green);
+      box-shadow: 0 15px 40px rgba(139,0,0,0.7);
+      border: 3px solid var(--horror-red);
     }
 
-    h1 { font-size: 4rem; margin-bottom: 25px; color: var(--light-leaf); text-shadow: 0 5px 15px rgba(30,132,73,0.8); }
+    h1 { font-size: 3.8rem; margin-bottom: 25px; color: var(--ghost-white); text-shadow: 0 5px 15px rgba(139,0,0,0.8); font-family: 'Creepster', cursive; }
 
-    input { width: 100%; padding: 18px; margin: 15px 0; border: 3px solid var(--dino-green); border-radius: 15px; font-size: 1.2rem; background: rgba(0,0,0,0.4); color: white; }
-    button { background: var(--earth-brown); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; }
-    button:hover { transform: scale(1.05); box-shadow: 0 8px 25px var(--earth-brown); }
+    input { width: 100%; padding: 18px; margin: 15px 0; border: 3px solid var(--horror-red); border-radius: 15px; font-size: 1.2rem; background: rgba(0,0,0,0.4); color: white; }
+    button { background: var(--horror-red); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; font-family: 'Creepster', cursive; }
+    button:hover { transform: scale(1.05); box-shadow: 0 8px 25px var(--horror-red); }
 
-    .header { background: rgba(30,132,73,0.8); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--dino-green); }
+    .header { background: rgba(139,0,0,0.8); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--horror-red); }
 
     #daftar-room { padding: 30px; overflow-y: auto; flex: 1; }
-    .room-item { background: rgba(255,255,255,0.12); padding: 20px; margin: 15px 0; border-radius: 20px; cursor: pointer; transition: all .3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--dino-green); }
-    .room-item.vip { background: rgba(139,69,19,0.5); border: 3px solid var(--owner-gold); }
-    .delete-btn { background: #c0392b; font-size: 1rem; padding: 10px 20px; margin-top: 12px; }
+    .room-item { background: rgba(255,255,255,0.1); padding: 20px; margin: 15px 0; border-radius: 20px; cursor: pointer; transition: all .3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--horror-red); }
 
     #pesan-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 16px; }
     .pesan { max-width: 80%; padding: 12px 18px; border-radius: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-    .pesan.kirim { background: var(--dino-green); align-self: flex-end; }
+    .pesan.kirim { background: var(--horror-red); align-self: flex-end; }
     .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
-    .pesan .pengirim { font-size: 1.1rem; opacity: 0.9; display: block; margin-bottom: 6px; font-family: 'Creepster', cursive; }
+    .pesan .pengirim { font-size: 1.2rem; opacity: 0.9; display: block; margin-bottom: 6px; font-family: 'Creepster', cursive; }
     .pesan img { max-width: 100%; border-radius: 14px; margin-top: 8px; }
     .pesan audio { margin-top: 8px; width: 100%; max-width: 340px; }
     .owner-badge { 
       background: linear-gradient(45deg, var(--owner-gold), #FFA500);
-      color: #000; font-size: 1.2rem; padding: 5px 14px; border-radius: 20px; 
+      color: #000; font-size: 1.3rem; padding: 6px 14px; border-radius: 20px; 
       margin-left: 12px; font-weight: bold; font-family: 'Creepster', cursive; 
       box-shadow: 0 3px 12px rgba(255,215,0,0.7); animation: glow 2s infinite alternate;
     }
@@ -97,11 +94,11 @@
       to { box-shadow: 0 3px 20px rgba(255,215,0,0.8); }
     }
 
-    .input-area { background: rgba(30,132,73,0.8); padding: 16px; display: flex; gap: 14px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+    .input-area { background: rgba(139,0,0,0.8); padding: 16px; display: flex; gap: 14px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
     #input-pesan { flex: 1; border-radius: 35px; background: rgba(255,255,255,0.18); color: white; padding: 16px; border: none; font-size: 1.1rem; }
-    #kirim, .attach, #rekam { width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--earth-brown); color: white; font-size: 1.5rem; cursor: pointer; transition: all .3s; }
-    #kirim:hover, .attach:hover, #rekam:hover { transform: rotate(360deg); box-shadow: 0 6px 20px var(--earth-brown); }
-    .attach { background: var(--dino-green); display: grid; place-items: center; }
+    #kirim, .attach, #rekam, #call-btn { width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--horror-red); color: white; font-size: 1.5rem; cursor: pointer; transition: all .3s; }
+    #kirim:hover, .attach:hover, #rekam:hover, #call-btn:hover { transform: rotate(360deg); box-shadow: 0 6px 20px var(--horror-red); }
+    .attach { background: var(--earth-brown); display: grid; place-items: center; }
 
     .rekam-ui { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 16px 32px; border-radius: 45px; display: flex; gap: 20px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
     .modal { display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.75); position: fixed; inset: 0; z-index: 10; }
@@ -115,7 +112,7 @@
 <!-- Login -->
 <div id="login" class="screen">
   <div class="box">
-    <h1>Chat Dinosaurus</h1>
+    <h1>Chat Horor</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.3rem;">By Saurus</p>
     <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
@@ -153,6 +150,7 @@
   <div class="header">
     <button onclick="kembali()">←</button>
     <h2 id="nama-room-saatini">Room</h2>
+    <button id="call-btn" onclick="mulaiTelepon()">📞 Telepon</button>
   </div>
   <div id="pesan-container"></div>
   <div class="input-area">
@@ -167,6 +165,15 @@
   </div>
 </div>
 
+<!-- Telepon UI -->
+<div id="telepon-ui" class="modal hidden">
+  <div class="box">
+    <h3>Telepon Horor</h3>
+    <p>Menghubungkan ke kegelapan...</p>
+    <button onclick="akhiriTelepon()">Akhiri</button>
+  </div>
+</div>
+
 <script>
   // Firebase config langsung (tanpa encode)
   const firebaseConfig = {
@@ -176,7 +183,7 @@
     projectId: "saurusproject-6974b",
     storageBucket: "saurusproject-6974b.appspot.com",
     messagingSenderId: "519472343742",
-    appId: "1:519472343742:android:59523cb9e738c479980cef" // Ganti kalau punya appId web dari Firebase
+    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti dengan appId asli dari Firebase kalau punya
   };
 
   firebase.initializeApp(firebaseConfig);
@@ -196,7 +203,6 @@
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Owner mode rahasia
     isOwner = namaUser.includes('{khusus:saurus}');
     if (isOwner) namaUser = namaUser.replace('{khusus:saurus}', '').trim() || 'Saurus';
 
@@ -319,7 +325,7 @@
 
     let pengirim = msg.pengirim;
     if (msg.pengirim.includes('{khusus:saurus}')) {
-      pengirim += ' <span class="owner-badge">OWNER</span>';
+      pengirim += ' <span class="owner-badge">OWNER TELAH TIBA!</span>';
     }
 
     let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
@@ -401,6 +407,16 @@
       alert('Gagal akses mikrofon: ' + err.message);
     }
   };
+
+  // Telepon (simulasi sederhana, bisa upgrade ke WebRTC nanti)
+  document.getElementById('call-btn').onclick = () => {
+    alert('Telepon horor dimulai... (fitur simulasi, suara akan datang dari kegelapan)');
+    document.getElementById('telepon-ui').classList.remove('hidden');
+  };
+
+  function akhiriTelepon() {
+    document.getElementById('telepon-ui').classList.add('hidden');
+  }
 </script>
 </body>
 </html>
