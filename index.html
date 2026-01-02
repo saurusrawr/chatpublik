@@ -1,252 +1,192 @@
-<!DOCTYPE html>
-<html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saurus Store</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <script>
+  <title>Saurus Store</title>  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#6d28d9',
-            secondary: '#a78bfa',
-            neon: '#c084fc',
-            dark: '#0f0e17',
-            light: '#f3e8ff'
+            primary:'#0284c7',
+            secondary:'#0ea5e9',
+            text:'#0f172a',
+            textsoft:'#475569',
+            border:'#bae6fd'
           }
         }
       }
     }
-  </script>
-
-  <style>
-    body {
-      background: linear-gradient(135deg, #0f0e17, #1a0033, #2e0066);
-      color: #f3e8ff;
-      background-attachment: fixed;
-    }
-    .glow { text-shadow: 0 0 10px #a78bfa, 0 0 20px #7c3aed; }
-    .card {
-      background: rgba(109,40,217,0.15);
-      backdrop-filter: blur(12px);
-      border: 1px solid #a78bfa;
-      box-shadow: 0 0 20px rgba(109,40,217,0.3);
-    }
-    .btn {
-      background: linear-gradient(135deg, #6d28d9, #a78bfa);
-      color: white;
-      transition: all 0.4s;
-    }
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 25px rgba(109,40,217,0.6);
-    }
-    .page { display: none; }
-    .page.active { display: block; }
-    input, select {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid #a78bfa;
-      color: white;
-    }
-  </style>
-</head>
-
-<body class="max-w-md mx-auto min-h-screen pb-28 p-4">
-
-<!-- HEADER -->
-<div class="flex justify-between items-center mb-6">
+  </script>  <style>
+    body{background:linear-gradient(180deg,#e0f2fe,#f8fafc)}
+    .card{background:#fff;border:1px solid #bae6fd;box-shadow:0 4px 10px rgba(0,0,0,0.05)}
+    .btn{background:linear-gradient(135deg,#0284c7,#0ea5e9);color:#fff;transition:0.3s}
+    .btn:hover{opacity:0.9;transform:scale(1.02)}
+    .page{display:none}
+    .page.active{display:block}
+  </style></head>
+<body class="max-w-md mx-auto min-h-screen pb-28 text-text"><!-- HEADER --><header class="flex justify-between items-center p-4">
   <div class="flex items-center gap-3">
-    <div class="w-14 h-14 bg-gradient-to-br from-primary to-secondary text-white rounded-2xl flex items-center justify-center glow">
-      <i class="fas fa-store text-2xl"></i>
+    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
+      <i class="fas fa-store"></i>
     </div>
     <div>
-      <p id="storeName" class="font-bold text-2xl glow">Saurus Store</p>
-      <p id="botText" class="text-sm text-neon">Luna AI MD v7</p>
+      <p class="font-bold text-primary" id="storeName">Saurus Store</p>
+      <p class="text-xs text-textsoft">DIGITAL MARKET</p>
     </div>
-  </div>
-
-  <div class="flex gap-5">
-    <button onclick="showPage('cart')" class="relative text-neon">
-      <i class="fas fa-shopping-cart text-3xl"></i>
-      <span id="cartCount" class="absolute -top-3 -right-3 bg-secondary text-white text-xs w-7 h-7 rounded-full flex items-center justify-center shadow-lg glow">0</span>
+  </div>  <div class="flex gap-4">
+    <button onclick="showPage('cart')" class="relative text-primary">
+      <i class="fas fa-shopping-cart text-xl"></i>
+      <span id="cartCount"
+        class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+        0
+      </span>
     </button>
-    <button onclick="openAdmin()" class="text-neon">
-      <i class="fas fa-user-shield text-3xl"></i>
+    <button onclick="openAdmin()" class="text-primary">
+      <i class="fas fa-user-shield text-xl"></i>
     </button>
   </div>
-</div>
-
-<!-- KATEGORI -->
-<div class="grid grid-cols-2 gap-4 mb-8">
-  <button onclick="showPage('bot')" class="card p-6 rounded-2xl text-center">
-    <p class="font-bold text-2xl text-primary glow">🤖 BOT</p>
+</header><!-- KATEGORI --><section class="px-4 grid grid-cols-2 gap-3">
+  <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
+    <p class="font-bold text-primary">SEWA BOT</p>
+    <p class="text-xs text-textsoft" id="botDesc">Luna AI MD v7.00</p>
   </button>
-  <button onclick="showPage('panel')" class="card p-6 rounded-2xl text-center">
-    <p class="font-bold text-2xl text-primary glow">⚙️ PANEL</p>
+  <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
+    <p class="font-bold text-primary">PANEL</p>
+    <p class="text-xs text-textsoft">WA / Telegram</p>
   </button>
-</div>
-
-<!-- BOT -->
-<div id="bot" class="page active space-y-6">
-  <h2 class="font-bold text-2xl text-primary text-center glow">🤖 Produk Bot</h2>
-  <div id="botList" class="space-y-6"></div>
-</div>
-
-<!-- PANEL -->
-<div id="panel" class="page space-y-6">
-  <h2 class="font-bold text-2xl text-primary text-center glow">⚙️ Produk Panel</h2>
-  <div id="panelList" class="space-y-6"></div>
-</div>
-
-<!-- CART -->
-<div id="cart" class="page space-y-6">
-  <h2 class="font-bold text-2xl text-primary text-center glow">🛒 Keranjang</h2>
-  <div id="cartList" class="space-y-4"></div>
-
-  <div class="card p-6 font-bold text-center text-xl glow">
-    Total: Rp <span id="totalPrice">0</span>
-  </div>
-
-  <button onclick="checkoutWA()" class="btn w-full py-5 rounded-2xl font-bold text-lg">
+</section><!-- BOT --><section id="bot" class="page active px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
+  <div id="botList" class="space-y-3"></div>
+</section><!-- PANEL --><section id="panel" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
+  <div id="panelList" class="space-y-3"></div>
+</section><!-- CART --><section id="cart" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
+  <div id="cartList"></div>  <div class="card p-3 font-bold">
+    Total: <span id="totalPrice">Rp0</span>
+  </div>  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
     Order via WhatsApp
-  </button>
-
-  <button onclick="checkoutTG()" class="card w-full py-5 rounded-2xl font-bold text-primary border border-neon text-lg">
+  </button>  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary">
     Order via Telegram
   </button>
-</div>
-
-<!-- ADMIN -->
-<div id="admin" class="page space-y-6">
-  <h2 class="font-bold text-3xl text-primary text-center glow">🚨 OWNER PANEL</h2>
-
-  <div class="card p-6">
-    <input id="storeInput" placeholder="Nama Toko" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white text-lg">
-    <input id="waInput" placeholder="Nomor WA" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white text-lg">
-    <input id="tgInput" placeholder="Username Telegram" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white text-lg">
-    <input id="botTextInput" placeholder="Teks Bot" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white text-lg">
-
-    <button onclick="saveConfig()" class="btn w-full py-4 rounded-2xl text-lg">💾 Simpan Config</button>
+</section><!-- ADMIN --><section id="admin" class="page px-4 mt-6 space-y-4">
+  <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
+  <div class="space-y-2">
+    <input id="adminStoreName" class="border p-2 rounded w-full" placeholder="Nama Store">
+    <input id="adminBotDesc" class="border p-2 rounded w-full" placeholder="Deskripsi Bot">
+    <input id="adminWA" class="border p-2 rounded w-full" placeholder="Nomor WA">
+    <input id="adminTG" class="border p-2 rounded w-full" placeholder="Link Telegram">
   </div>
+  <div id="adminProductList" class="space-y-2"></div>
+</section><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+    authDomain: "saurusproject-6974b.firebaseapp.com",
+    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "saurusproject-6974b",
+    storageBucket: "saurusproject-6974b.firebasestorage.app",
+    messagingSenderId: "519472343742",
+    appId: "1:519472343742:android:59523cb9e738c479980cef"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script><script>
+const botList = document.getElementById('botList')
+const panelList = document.getElementById('panelList')
+const cartList = document.getElementById('cartList')
+const adminProductList = document.getElementById('adminProductList')
+const cartCount = document.getElementById('cartCount')
+const totalPrice = document.getElementById('totalPrice')
 
-  <hr class="border-secondary my-8">
+let storeName = document.getElementById('storeName')
+let botDesc = document.getElementById('botDesc')
+let waNumber = '62895393336779'
+let tgLink = 'https://t.me/lordsaurus'
+let cart = []
 
-  <h3 class="font-bold text-2xl text-primary text-center glow">➕ Tambah Produk</h3>
-  <input id="pName" placeholder="Nama Produk" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white">
-  <input id="pDesc" placeholder="Deskripsi" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white">
-  <input id="pPrice" placeholder="Harga" type="number" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white">
-  <select id="pCat" class="w-full p-4 mb-4 bg-dark border border-neon rounded-xl text-white">
-    <option value="bot">BOT</option>
-    <option value="panel">PANEL</option>
-  </select>
-  <button onclick="addProduct()" class="btn w-full py-4 rounded-2xl">Tambah</button>
+// Produk kosong, bisa ditambah/edit/delete di admin
+let products = []
 
-  <div id="adminList" class="space-y-4 mt-8"></div>
-</div>
+function render(){
+  botList.innerHTML = ''
+  panelList.innerHTML = ''
+  cartList.innerHTML = ''
+  adminProductList.innerHTML = ''
 
-<script>
-/* 🔥 FIREBASE */
-firebase.initializeApp({
-  apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-  databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app"
-})
-const db = firebase.database()
+  products.forEach(p => {
+    // BOT
+    if(p.category==='bot'){
+      const div = document.createElement('div')
+      div.className='card p-3 flex justify-between items-center rounded-xl'
+      div.innerHTML = `<div><p class='font-bold text-primary'>${p.name}</p><p class='text-xs text-textsoft'>Rp${p.price}</p></div><button onclick='addCart(${p.id})' class='btn py-1 px-3 rounded'>Add</button>`
+      botList.appendChild(div)
+    }
+    // PANEL
+    if(p.category==='panel'){
+      const div = document.createElement('div')
+      div.className='card p-3 flex justify-between items-center rounded-xl'
+      div.innerHTML = `<div><p class='font-bold text-primary'>${p.name}</p><p class='text-xs text-textsoft'>Rp${p.price}</p></div><button onclick='addCart(${p.id})' class='btn py-1 px-3 rounded'>Add</button>`
+      panelList.appendChild(div)
+    }
+    // ADMIN
+    const adminDiv = document.createElement('div')
+    adminDiv.className='flex gap-2'
+    adminDiv.innerHTML=`<input value='${p.name}' data-id='${p.id}' class='border p-1 rounded w-full'><input value='${p.price}' data-id='${p.id}' class='border p-1 rounded w-20'><select data-id='${p.id}'><option value='bot' ${p.category==='bot'?'selected':''}>Bot</option><option value='panel' ${p.category==='panel'?'selected':''}>Panel</option></select><button onclick='deleteProduct(${p.id})' class='btn px-2'>Del</button>`
+    adminProductList.appendChild(adminDiv)
+  })
 
-/* CONFIG */
-const DEV_PASSWORD = "rusdev"
-const waNumber = "62895393336779"
-const tgLink = "https://t.me/lordsaurus"
+  updateCart()
+}
 
-/* PAGE */
+function addCart(id){
+  const p = products.find(x=>x.id===id)
+  if(p){cart.push(p);updateCart()}
+}
+
+function updateCart(){
+  cartList.innerHTML=''
+  let total=0
+  cart.forEach((p,i)=>{
+    const div = document.createElement('div')
+    div.className='card p-2 flex justify-between rounded-xl'
+    div.innerHTML=`<p>${p.name}</p><p>Rp${p.price}</p>`
+    cartList.appendChild(div)
+    total+=p.price
+  })
+  cartCount.innerText=cart.length
+  totalPrice.innerText=`Rp${total}`
+}
+
+function checkoutWA(){
+  const msg = encodeURIComponent(cart.map(c=>`${c.name} Rp${c.price}`).join('\n')+`\nTotal: ${totalPrice.innerText}`)
+  window.open(`https://wa.me/${waNumber}?text=${msg}`)
+}
+
+function checkoutTG(){
+  const msg = encodeURIComponent(cart.map(c=>`${c.name} Rp${c.price}`).join('\n')+`\nTotal: ${totalPrice.innerText}`)
+  window.open(`${tgLink}?text=${msg}`)
+}
+
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
   document.getElementById(id).classList.add('active')
 }
 
-/* ADMIN */
 function openAdmin(){
-  const pw = prompt("Masukkan password owner (rusdev):")
-  if(pw !== DEV_PASSWORD) return alert("Password salah bro! Coba lagi.")
   showPage('admin')
 }
 
-/* CONFIG LOAD */
-db.ref('config').on('value', s=>{
-  if(!s.exists()) return
-  const d = s.val()
-  document.getElementById('storeName').innerText = d.storeName || "Saurus Store"
-  document.getElementById('botText').innerText = d.botText || "Luna AI MD v7"
-  document.getElementById('storeInput').value = d.storeName
-  document.getElementById('waInput').value = d.wa
-  document.getElementById('tgInput').value = d.telegram
-  document.getElementById('botTextInput').value = d.botText
-})
-
-function saveConfig(){
-  db.ref('config').set({
-    storeName: document.getElementById('storeInput').value,
-    wa: document.getElementById('waInput').value,
-    telegram: document.getElementById('tgInput').value,
-    botText: document.getElementById('botTextInput').value
-  })
-  alert("Config tersimpan!")
+function deleteProduct(id){
+  products=products.filter(p=>p.id!==id)
+  render()
 }
 
-/* PRODUK */
-function renderProducts(data){
-  document.getElementById('botList').innerHTML = ''
-  document.getElementById('panelList').innerHTML = ''
-  document.getElementById('adminList').innerHTML = ''
-  for(let id in data){
-    let p = data[id]
-    let card = `
-      <div class="card p-5 rounded-2xl">
-        <p class="font-bold text-xl text-primary">${p.name}</p>
-        <p class="text-sm text-light">${p.desc}</p>
-        <p class="text-green-400 font-bold mt-2">Rp${p.price.toLocaleString('id-ID')}</p>
-      </div>`
-    if(p.category==="bot") document.getElementById('botList').innerHTML+=card
-    else document.getElementById('panelList').innerHTML+=card
+// Admin Inputs
+document.getElementById('adminStoreName').oninput=e=>storeName.innerText=e.target.value
+document.getElementById('adminBotDesc').oninput=e=>botDesc.innerText=e.target.value
+document.getElementById('adminWA').oninput=e=>waNumber=e.target.value
+document.getElementById('adminTG').oninput=e=>tgLink=e.target.value
 
-    document.getElementById('adminList').innerHTML+=`
-      <div class="card p-5 rounded-2xl">
-        <input value="${p.name}" onchange="edit('${id}','name',this.value)" class="w-full mb-3 p-3 bg-dark border border-secondary rounded text-white">
-        <input value="${p.desc}" onchange="edit('${id}','desc',this.value)" class="w-full mb-3 p-3 bg-dark border border-secondary rounded text-white">
-        <input value="${p.price}" onchange="edit('${id}','price',this.value)" class="w-full mb-3 p-3 bg-dark border border-secondary rounded text-white">
-        <button onclick="del('${id}')" class="bg-red-600 w-full mt-2 py-3 rounded">Hapus</button>
-      </div>`
-  }
-}
-
-db.ref('products').on('value',s=>{
-  if(s.exists())renderProducts(s.val())
-})
-
-function addProduct(){
-  db.ref('products').push({
-    name:document.getElementById('pName').value,
-    desc:document.getElementById('pDesc').value,
-    price:Number(document.getElementById('pPrice').value),
-    category:document.getElementById('pCat').value
-  })
-  document.getElementById('pName').value = ''
-  document.getElementById('pDesc').value = ''
-  document.getElementById('pPrice').value = ''
-}
-
-function edit(id,k,v){
-  db.ref('products/'+id+'/'+k).set(v)
-}
-
-function del(id){
-  if(confirm("Hapus?"))db.ref('products/'+id).remove()
-}
-</script>
-
-</body>
+render()
+</script></body>
 </html>
