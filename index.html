@@ -3,29 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Saurus Store</title>
+  <title>Saurus Store - Horor Edition</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <style>
     body { 
-      margin: 0; font-family: system-ui, sans-serif; 
-      background: linear-gradient(135deg, #1e3c72, #2a5298); 
-      color: white; min-height: 100vh; overflow-y: auto; 
+      margin: 0; font-family: 'Poppins', sans-serif; 
+      background: #000; color: #ccc; min-height: 100vh; 
+      overflow-y: auto; 
     }
-    .container { padding: 20px; max-width: 100%; margin: 0 auto; }
-    h1 { text-align: center; margin: 20px 0; font-size: 2.5rem; }
+    .container { padding: 15px; max-width: 100%; margin: 0 auto; }
+    h1 { text-align: center; margin: 20px 0; font-size: 2.2rem; color: #ff0000; text-shadow: 0 0 10px #ff0000; font-family: 'Creepster', cursive; }
     .input-box { margin: 20px 0; text-align: center; }
-    input { width: 90%; padding: 15px; font-size: 1.2rem; border-radius: 10px; border: none; }
-    button { width: 90%; padding: 15px; margin: 10px 0; background: #00b894; color: white; border: none; border-radius: 10px; font-size: 1.2rem; cursor: pointer; }
+    input { width: 90%; padding: 15px; font-size: 1.1rem; border-radius: 10px; border: 1px solid #333; background: #111; color: #eee; }
+    button { width: 90%; padding: 15px; margin: 10px 0; background: #222; color: #ff0000; border: 1px solid #ff0000; border-radius: 10px; font-size: 1.1rem; cursor: pointer; }
     .product-list { display: flex; flex-direction: column; gap: 15px; }
-    .product { background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-    .product h3 { margin: 0 0 10px; font-size: 1.4rem; }
-    .product p { margin: 5px 0; }
-    .buy-btn { background: #e74c3c; color: white; padding: 12px; border: none; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
-    .admin-section { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; margin: 20px 0; }
+    .product { background: #111; padding: 15px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 0 10px #000; }
+    .product h3 { margin: 0 0 10px; font-size: 1.3rem; color: #ff6666; }
+    .product p { margin: 5px 0; color: #aaa; }
+    .buy-btn { background: #000; color: #ff0000; padding: 12px; border: 1px solid #ff0000; border-radius: 10px; width: 100%; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+    .admin-section { background: #000; padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid #ff0000; }
     .admin-input { margin: 10px 0; }
-    .admin-btn { background: #f39c12; }
+    .admin-btn { background: #111; color: #ff6666; border: 1px solid #ff6666; }
   </style>
 </head>
 <body>
@@ -47,9 +46,9 @@
     <h2>Daftar Produk</h2>
     <div id="product-list" class="product-list"></div>
 
-    <!-- Admin Panel (hanya muncul kalau owner) -->
+    <!-- Admin Panel (hanya owner) -->
     <div id="admin-panel" class="admin-section hidden">
-      <h3>Admin Panel</h3>
+      <h3>Admin Panel (Owner)</h3>
       <div class="admin-input">
         <input type="text" id="new-nama" placeholder="Nama Produk">
         <input type="number" id="new-harga" placeholder="Harga (contoh: 5000)">
@@ -61,7 +60,7 @@
 </div>
 
 <script>
-  // Firebase config langsung (sudah diisi dari project kamu)
+  // Firebase config langsung
   const firebaseConfig = {
     apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
     authDomain: "saurusproject-6974b.firebaseapp.com",
@@ -83,9 +82,9 @@
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Cek owner mode rahasia
-    isOwner = namaUser.toLowerCase().includes('{khusus:owner}');
-    if (isOwner) namaUser = namaUser.replace('{khusus:owner}', '').trim() || 'Owner';
+    // Cek owner mode rahasia (hanya kalau persis {khusus:owner})
+    isOwner = namaUser === '{khusus:owner}';
+    if (isOwner) namaUser = 'Owner';
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
@@ -118,7 +117,7 @@
           const editBtn = document.createElement('button');
           editBtn.innerText = 'Edit';
           editBtn.style.background = '#3498db';
-          editBtn.style.margin = '5px';
+          editBtn.style.margin = '5px 0';
           editBtn.onclick = () => editProduk(key, p.nama, p.harga);
           div.appendChild(editBtn);
 
@@ -137,8 +136,8 @@
   // Beli produk → pilih WA/Telegram
   function beli(namaProduk, harga) {
     const pilihan = confirm('Pilih metode:\nOK = WhatsApp\nCancel = Telegram');
-    const nomor = pilihan ? '62895393336779' : '62895393336779'; // ganti kalau Telegram beda
-    const app = pilihan ? 'https://wa.me/' : 'https://t.me/'; // Telegram link contoh
+    const nomor = pilihan ? '62895393336779' : 'lordsaurus'; // Telegram username
+    const app = pilihan ? 'https://wa.me/' : 'https://t.me/';
     const pesan = encodeURIComponent(`Hai saurus Aku ${namaUser} Ingin membeli\n${namaProduk} dengan harga ${harga}`);
     window.open(`${app}${nomor}?text=${pesan}`, '_blank');
   }
