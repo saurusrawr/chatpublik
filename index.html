@@ -17,6 +17,7 @@
       --light: #E0AAFF;
       --dark: #240046;
       --owner-gold: #FFD700;
+      --vip-brown: #8B4513;
       --bg-gradient: linear-gradient(135deg, #240046 0%, #3C096C 50%, #7B2CBF 100%);
     }
 
@@ -33,27 +34,22 @@
 
     .overlay { 
       position: fixed; inset: 0; 
-      background: radial-gradient(circle at 30% 70%, rgba(123,44,191,0.3) 0%, transparent 50%);
+      background: radial-gradient(circle at 30% 70%, rgba(123,44,191,0.35) 0%, transparent 60%);
       pointer-events: none;
       z-index: -1;
-      animation: pulse 15s infinite alternate;
+      animation: pulse 12s infinite alternate;
     }
 
     @keyframes pulse {
-      0% { opacity: 0.6; }
-      100% { opacity: 0.9; }
+      0% { opacity: 0.5; }
+      100% { opacity: 0.85; }
     }
 
-    .screen { 
-      position: absolute; inset: 0; 
-      display: flex; flex-direction: column; 
-      transition: opacity .5s ease; 
-      animation: fadeIn 1s;
-    }
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .6s ease; animation: fadeIn 1.2s; }
     .screen.hidden { opacity: 0; pointer-events: none; }
 
     .box { 
-      background: rgba(36,0,70,0.6);
+      background: rgba(36,0,70,0.65);
       backdrop-filter: blur(20px);
       padding: 50px 40px;
       border-radius: 30px;
@@ -61,47 +57,22 @@
       width: 90%;
       margin: auto;
       text-align: center;
-      box-shadow: 0 20px 60px rgba(123,44,191,0.5);
+      box-shadow: 0 20px 60px rgba(123,44,191,0.6);
       border: 2px solid var(--primary);
     }
 
-    h1 { 
-      font-size: 3.5rem; 
-      margin-bottom: 20px; 
-      background: linear-gradient(90deg, var(--light), white); 
-      -webkit-background-clip: text; 
-      -webkit-text-fill-color: transparent; 
-      font-family: 'Press Start 2P', cursive;
-      text-shadow: 0 4px 15px rgba(157,78,221,0.6);
-    }
+    h1 { font-size: 3.8rem; margin-bottom: 25px; background: linear-gradient(90deg, var(--light), white); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Press Start 2P', cursive; text-shadow: 0 5px 15px rgba(157,78,221,0.7); }
 
-    input { 
-      width: 100%; padding: 18px; margin: 15px 0; 
-      border: 2px solid var(--primary); border-radius: 15px; 
-      font-size: 1.2rem; background: rgba(255,255,255,0.08); color: white; 
-    }
-
-    button { 
-      background: var(--accent); color: white; padding: 16px; border: none; 
-      border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s;
-      font-family: 'Press Start 2P', cursive; letter-spacing: 1px;
-    }
+    input { width: 100%; padding: 18px; margin: 15px 0; border: 2px solid var(--primary); border-radius: 15px; font-size: 1.2rem; background: rgba(255,255,255,0.08); color: white; }
+    button { background: var(--accent); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; font-family: 'Press Start 2P', cursive; letter-spacing: 1px; }
     button:hover { transform: scale(1.05); box-shadow: 0 10px 30px var(--accent); }
 
-    .header { 
-      background: rgba(36,0,70,0.8); padding: 20px; 
-      display: flex; justify-content: space-between; align-items: center; 
-      border-bottom: 3px solid var(--primary);
-    }
+    .header { background: rgba(36,0,70,0.85); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
 
     #daftar-room { padding: 30px; overflow-y: auto; flex: 1; }
-    .room-item { 
-      background: rgba(255,255,255,0.1); padding: 20px; margin: 15px 0; 
-      border-radius: 20px; cursor: pointer; transition: all .3s;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
+    .room-item { background: rgba(255,255,255,0.12); padding: 20px; margin: 15px 0; border-radius: 20px; cursor: pointer; transition: all .3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--primary); }
-    .room-item.vip { background: rgba(139,69,19,0.4); border: 2px solid var(--owner-gold); }
+    .room-item.vip { background: rgba(139,69,19,0.45); border: 2px solid var(--owner-gold); }
     .delete-btn { background: #ff4757; font-size: 1rem; padding: 10px 20px; margin-top: 12px; }
 
     #pesan-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 16px; }
@@ -123,10 +94,7 @@
       to { box-shadow: 0 3px 20px rgba(255,215,0,0.8); }
     }
 
-    .input-area { 
-      background: rgba(36,0,70,0.7); padding: 16px; display: flex; gap: 14px; 
-      position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
-    }
+    .input-area { background: rgba(36,0,70,0.7); padding: 16px; display: flex; gap: 14px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.4); }
     #input-pesan { flex: 1; border-radius: 35px; background: rgba(255,255,255,0.18); color: white; padding: 16px; border: none; font-size: 1.1rem; }
     #kirim, .attach, #rekam { width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--accent); color: white; font-size: 1.5rem; cursor: pointer; transition: all .3s; }
     #kirim:hover, .attach:hover, #rekam:hover { transform: rotate(360deg); box-shadow: 0 6px 20px var(--accent); }
@@ -145,7 +113,7 @@
 <div id="login" class="screen">
   <div class="box">
     <h1>Chat Room</h1>
-    <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
+    <p style="margin:15px 0; opacity:0.9; font-size:1.3rem;">By Saurus</p>
     <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
   </div>
@@ -197,16 +165,7 @@
 </div>
 
 <script type="module">
-  // Ganti dengan config Firebase kamu
-  const firebaseConfig = {
-    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-    authDomain: "saurusproject-6974b.firebaseapp.com",
-    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "saurusproject-6974b",
-    storageBucket: "saurusproject-6974b.appspot.com",
-    messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
-  };
+  import { firebaseConfig } from './firebase-config.js';
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
@@ -225,9 +184,9 @@
     namaUser = document.getElementById('nama').value.trim();
     if (!namaUser) return alert('Nama wajib diisi!');
 
-    // Mode owner: pola rahasia {khusus:apaaja}
+    // Mode owner rahasia
     isOwner = namaUser.match(/\{khusus:.*\}/i) !== null;
-    if (isOwner) namaUser = namaUser.replace(/\{khusus:|\}/gi, '').trim(); // hapus kode
+    if (isOwner) namaUser = namaUser.replace(/\{khusus:|\}/gi, '').trim();
 
     auth.signInAnonymously().then(() => {
       document.getElementById('login').classList.add('hidden');
