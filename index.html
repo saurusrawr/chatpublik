@@ -1,480 +1,247 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Chat Horor - By Saurus</title>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horror Chat - Saurus</title>
 
-    :root {
-      --horror-red: #8B0000;
-      --dark-blood: #1a0000;
-      --ghost-white: #f8f8ff;
-      --owner-gold: #FFD700;
-    }
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { 
-      font-family: 'Poppins', sans-serif;
-      background: url('https://images.unsplash.com/photo-1534790735596-8fce982f394b?ixlib=rb-4.0.3&auto=format&fit=crop&q=80') no-repeat center/cover fixed;
-      color: var(--ghost-white);
-      min-height: 100vh;
-      background-attachment: fixed;
-      overflow: hidden;
-      position: relative;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-    .ghost-hantu { 
-      position: fixed; top: 10%; right: 5%; width: 150px; opacity: 0.4; 
-      animation: floatGhost 5s infinite ease-in-out;
-    }
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Inter,sans-serif;
+  background:url('https://raw.githubusercontent.com/saurusrawr/akirabot/main/uploads/2026-01-02/saurus_1767333392193_ddnui.jpg') center/cover fixed;
+  color:#fff;
+}
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+}
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+}
+.hidden{display:none}
+.box{
+  margin:auto;
+  background:#111;
+  padding:30px;
+  border-radius:14px;
+  width:90%;max-width:420px;
+  text-align:center;
+}
+input,button{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  margin-top:10px;
+  font-size:15px;
+}
+input{background:#222;color:#fff}
+button{background:#000;color:#fff;border:1px solid #333}
+button:hover{background:#222}
 
-    @keyframes floatGhost {
-      0% { transform: translateY(0); opacity: 0.4; }
-      50% { transform: translateY(-20px); opacity: 0.6; }
-      100% { transform: translateY(0); opacity: 0.4; }
-    }
+.header{
+  background:#000;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .overlay { 
-      position: fixed; inset: 0; 
-      background: linear-gradient(to bottom, rgba(139,0,0,0.5), rgba(26,0,0,0.9));
-      pointer-events: none;
-      z-index: -1;
-      animation: bloodPulse 8s infinite alternate;
-    }
+#rooms,.chat-box{
+  flex:1;overflow-y:auto;padding:15px
+}
+.room{
+  background:#111;padding:15px;
+  border-radius:12px;margin-bottom:10px;
+}
 
-    @keyframes bloodPulse {
-      0% { opacity: 0.6; }
-      100% { opacity: 0.9; }
-    }
+.msg{
+  max-width:80%;
+  padding:10px 14px;
+  border-radius:14px;
+}
+.me{background:#000;margin-left:auto}
+.other{background:#222}
+.msg img{max-width:100%;border-radius:10px;margin-top:6px}
 
-    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .6s; animation: hauntIn 2s; }
-    .screen.hidden { opacity: 0; pointer-events: none; }
+.input-bar{
+  display:flex;gap:8px;
+  padding:10px;background:#000;
+}
+.input-bar input{flex:1}
 
-    @keyframes hauntIn {
-      0% { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-
-    .box { 
-      background: rgba(139,0,0,0.6);
-      backdrop-filter: blur(15px);
-      padding: 50px 40px;
-      border-radius: 20px;
-      max-width: 90vw;
-      margin: auto;
-      text-align: center;
-      box-shadow: 0 15px 40px rgba(139,0,0,0.7);
-      border: 3px solid var(--horror-red);
-    }
-
-    h1 { font-size: 3rem; margin-bottom: 25px; color: var(--ghost-white); text-shadow: 0 5px 15px rgba(139,0,0,0.8); font-family: 'Creepster', cursive; }
-
-    input { width: 100%; padding: 18px; margin: 15px 0; border: 3px solid var(--horror-red); border-radius: 15px; font-size: 1.2rem; background: rgba(0,0,0,0.4); color: white; }
-    button { background: var(--horror-red); color: white; padding: 16px; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s; font-family: 'Creepster', cursive; }
-    button:hover { transform: scale(1.05); box-shadow: 0 8px 25px var(--horror-red); }
-
-    .header { background: rgba(139,0,0,0.8); padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--horror-red); }
-
-    #daftar-room { padding: 30px; overflow-y: auto; flex: 1; }
-    .room-item { background: rgba(255,255,255,0.1); padding: 20px; margin: 15px 0; border-radius: 20px; cursor: pointer; transition: all .3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--horror-red); }
-
-    #pesan-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 16px; }
-    .pesan { max-width: 80%; padding: 12px 18px; border-radius: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); position: relative; }
-    .pesan.kirim { background: var(--horror-red); align-self: flex-end; }
-    .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
-    .pesan .pengirim { font-size: 1.2rem; opacity: 0.9; display: block; margin-bottom: 6px; font-family: 'Creepster', cursive; }
-    .pesan img { max-width: 100%; border-radius: 14px; margin-top: 8px; }
-    .pesan audio { margin-top: 8px; width: 100%; max-width: 340px; }
-    .owner-badge { 
-      background: linear-gradient(45deg, var(--owner-gold), #FFA500);
-      color: #000; font-size: 1.3rem; padding: 6px 14px; border-radius: 20px; 
-      margin-left: 12px; font-weight: bold; font-family: 'Creepster', cursive; 
-      box-shadow: 0 3px 12px rgba(255,215,0,0.7); animation: glow 2s infinite alternate;
-    }
-
-    @keyframes glow {
-      from { box-shadow: 0 3px 10px rgba(255,215,0,0.4); }
-      to { box-shadow: 0 3px 20px rgba(255,215,0,0.8); }
-    }
-
-    .input-area { background: rgba(139,0,0,0.8); padding: 16px; display: flex; gap: 14px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
-    #input-pesan { flex: 1; border-radius: 35px; background: rgba(255,255,255,0.18); color: white; padding: 16px; border: none; font-size: 1.1rem; }
-    #kirim, .attach, #rekam, #call-btn { width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--horror-red); color: white; font-size: 1.5rem; cursor: pointer; transition: all .3s; }
-    #kirim:hover, .attach:hover, #rekam:hover, #call-btn:hover { transform: rotate(360deg); box-shadow: 0 6px 20px var(--horror-red); }
-    .attach { background: var(--dark-blood); display: grid; place-items: center; }
-
-    .rekam-ui { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 16px 32px; border-radius: 45px; display: flex; gap: 20px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
-    .modal { display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.75); position: fixed; inset: 0; z-index: 10; }
-    .modal.hidden { display: none; }
-    .pesan.long-press { background: #ff0000; animation: shake 0.5s; }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    @media (min-width: 768px) {
-      .box { max-width: 600px; padding: 60px; }
-      h1 { font-size: 4rem; }
-    }
-  </style>
+.call-ui{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;justify-content:center;align-items:center;
+  z-index:9;
+}
+</style>
 </head>
 <body>
-
 <div class="overlay"></div>
 
-<!-- Gambar Hantu Overlay -->
-<img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&q=80" class="ghost-hantu" alt="Hantu">
-
-<!-- Suara Horor Auto Play -->
-<audio id="horor-sound" autoplay loop>
-  <source src="https://www.soundjay.com/horror/horror-ambience-1.mp3" type="audio/mpeg">
-</audio>
-
-<!-- Login -->
+<!-- LOGIN -->
 <div id="login" class="screen">
   <div class="box">
-    <h1>Chat Horor</h1>
-    <p style="margin:15px 0; opacity:0.9; font-size:1.3rem;">By Saurus</p>
-    <input type="text" id="nama" placeholder="Nama kamu...">
-    <button onclick="masuk()">Masuk</button>
+    <h2>Horror Chat</h2>
+    <p>By Saurus</p>
+    <input id="nama" placeholder="Nama kamu">
+    <button onclick="login()">Masuk</button>
   </div>
 </div>
 
-<!-- Dashboard -->
-<div id="dashboard" class="screen hidden">
+<!-- DASHBOARD -->
+<div id="dash" class="screen hidden">
   <div class="header">
-    <h2>Daftar Room</h2>
-    <button onclick="keluar()">Logout</button>
+    <b>Room</b>
+    <button onclick="logout()">Keluar</button>
   </div>
-  <input type="text" id="cari" placeholder="Cari nama room..." oninput="cariRoom()">
-  <button onclick="tampilBuat()">+ Buat Room Baru</button>
-  <div id="daftar-room"></div>
+  <div id="rooms"></div>
+  <button onclick="buatRoom()">+ Buat Room</button>
 </div>
 
-<!-- Form Buat Room -->
-<div id="form-buat" class="modal hidden">
-  <div class="box">
-    <h3>Buat Room Baru</h3>
-    <input type="text" id="nama-room" placeholder="Nama Room">
-    <input type="password" id="pw-room" placeholder="Password (opsional)">
-    <input type="number" id="max-anggota" placeholder="Max anggota (opsional)" min="1">
-    <label style="display:block;margin-top:15px;"><input type="checkbox" id="vip-room"> VIP Room (khusus owner)</label>
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button onclick="buatRoom()">Buat</button>
-      <button onclick="sembunyiBuat()">Batal</button>
-    </div>
-  </div>
-</div>
-
-<!-- Chat Room -->
+<!-- CHAT -->
 <div id="chat" class="screen hidden">
   <div class="header">
-    <button onclick="kembali()">←</button>
-    <h2 id="nama-room-saatini">Room</h2>
-    <button id="call-btn" onclick="mulaiTelepon()">📞 Telepon</button>
+    <button onclick="back()">←</button>
+    <b id="roomName"></b>
+    <button onclick="call()">📞</button>
   </div>
-  <div id="pesan-container"></div>
-  <div class="input-area">
-    <input type="text" id="input-pesan" placeholder="Ketik pesan...">
-    <button id="kirim">➤</button>
-    <label class="attach">📷 <input type="file" id="upload-gambar" accept="image/*" hidden></label>
-    <button id="rekam">🎤</button>
-  </div>
-  <div id="rekam-ui" class="hidden">
-    <span>Merekam...</span>
-    <button id="stop-rekam">Stop</button>
-    <button id="batal-rekam">Batal</button>
+  <div class="chat-box" id="msgs"></div>
+  <div class="input-bar">
+    <input id="text" placeholder="Ketik pesan...">
+    <input type="file" id="img" hidden>
+    <button onclick="pickImg()">📷</button>
+    <button onclick="record()">🎤</button>
+    <button onclick="send()">➤</button>
   </div>
 </div>
 
-<!-- Telepon UI -->
-<div id="telepon-ui" class="modal hidden">
+<!-- CALL -->
+<div id="callUI" class="call-ui hidden">
   <div class="box">
     <h3>Telepon Horor</h3>
-    <p>Suara dari kegelapan...</p>
-    <button onclick="akhiriTelepon()">Akhiri</button>
+    <p>Semua orang terhubung...</p>
+    <button onclick="endCall()">Akhiri</button>
   </div>
 </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-    authDomain: "saurusproject-6974b.firebaseapp.com",
-    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "saurusproject-6974b",
-    storageBucket: "saurusproject-6974b.appspot.com",
-    messagingSenderId: "519472343742",
-    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+  authDomain: "saurusproject-6974b.firebaseapp.com",
+  databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "saurusproject-6974b",
+  storageBucket: "saurusproject-6974b.appspot.com"
+};
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.database();
-  const storage = firebase.storage();
+firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const st=firebase.storage();
+const auth=firebase.auth();
 
-  let namaUser = '';
-  let isOwner = false;
-  let roomSaatIni = null;
-  let sedangRekam = false;
-  let recorder, chunksAudio = [];
-  let currentListener = null;
+let user="",room="",rec,chunk=[];
 
-  // Login + cek owner
-  function masuk() {
-    namaUser = document.getElementById('nama').value.trim();
-    if (!namaUser) return alert('Nama wajib diisi!');
+function login(){
+  user=nama.value.trim();
+  if(!user)return;
+  auth.signInAnonymously().then(()=>{
+    login.classList.add("hidden");
+    dash.classList.remove("hidden");
+    loadRooms();
+  });
+}
 
-    isOwner = namaUser.toLowerCase().includes('{khusus:saurus}');
-    if (isOwner) namaUser = namaUser.replace(/\{khusus:saurus\}/i, '').trim() || 'Saurus';
+function loadRooms(){
+  db.ref("rooms").on("value",s=>{
+    rooms.innerHTML="";
+    Object.entries(s.val()||{}).forEach(([id,r])=>{
+      let d=document.createElement("div");
+      d.className="room";
+      d.textContent=r.name;
+      d.onclick=()=>join(id,r.name);
+      rooms.appendChild(d);
+    });
+  });
+}
 
-    auth.signInAnonymously()
-      .then(() => {
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        tampilDaftarRoom();
-      })
-      .catch(err => {
-        console.error('Login error:', err);
-        alert('Gagal masuk: ' + err.message + '\nCek console (F12)');
+function buatRoom(){
+  let n=prompt("Nama room?");
+  if(n)db.ref("rooms").push({name:n});
+}
+
+function join(id,n){
+  room=id;
+  roomName.textContent=n;
+  dash.classList.add("hidden");
+  chat.classList.remove("hidden");
+
+  db.ref(`rooms/${room}/call`).on("value",s=>{
+    callUI.classList.toggle("hidden",!s.val());
+  });
+
+  db.ref(`rooms/${room}/msg`).on("child_added",s=>{
+    let m=s.val();
+    let d=document.createElement("div");
+    d.className="msg "+(m.u==user?"me":"other");
+    d.innerHTML=`<b>${m.u}</b><br>${m.t||""}${m.i?`<img src="${m.i}">`:""}`;
+    d.onmousedown=()=>{if(m.u==user&&confirm("Hapus pesan ini?"))db.ref(`rooms/${room}/msg/${s.key}`).remove();}
+    msgs.appendChild(d);
+    msgs.scrollTop=msgs.scrollHeight;
+  });
+}
+
+function send(){
+  if(text.value){
+    db.ref(`rooms/${room}/msg`).push({u:user,t:text.value});
+    text.value="";
+  }
+}
+
+function pickImg(){img.click()}
+img.onchange=e=>{
+  let f=e.target.files[0];
+  text.value=f.name;
+  send=()=>{
+    let r=st.ref("img/"+Date.now()+f.name);
+    r.put(f).then(()=>r.getDownloadURL()).then(u=>{
+      db.ref(`rooms/${room}/msg`).push({u:user,i:u});
+      text.value="";
+    });
+  }
+}
+
+function record(){
+  navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{
+    rec=new MediaRecorder(s);
+    rec.ondataavailable=e=>chunk.push(e.data);
+    rec.onstop=()=>{
+      let b=new Blob(chunk,{type:"audio/webm"});
+      let r=st.ref("vn/"+Date.now());
+      r.put(b).then(()=>r.getDownloadURL()).then(u=>{
+        db.ref(`rooms/${room}/msg`).push({u:user,i:u});
       });
-  }
+    };
+    if(confirm("Rekam suara?"))rec.start();
+    if(confirm("Stop?"))rec.stop();
+    else{chunk=[];rec.stop();}
+  });
+}
 
-  // Logout
-  function keluar() {
-    if (confirm('Yakin logout?')) auth.signOut().then(() => location.reload());
-  }
-
-  // Tampil daftar room
-  function tampilDaftarRoom(kata = '') {
-    db.ref('rooms').once('value').then(snapshot => {
-      const list = document.getElementById('daftar-room');
-      list.innerHTML = '';
-      const rooms = snapshot.val() || {};
-
-      Object.keys(rooms).forEach(id => {
-        const r = rooms[id];
-        if (kata && !r.nama.toLowerCase().includes(kata.toLowerCase())) return;
-
-        const div = document.createElement('div');
-        div.className = 'room-item';
-        div.innerHTML = `<strong>${r.nama}</strong><br><small>Max: ${r.max || '∞'}</small>`;
-        div.onclick = () => gabungRoom(id, r.password);
-
-        if (isOwner) {
-          const del = document.createElement('button');
-          del.innerText = 'Hapus Room';
-          del.className = 'delete-btn';
-          del.onclick = e => { e.stopPropagation(); if (confirm('Hapus?')) db.ref('rooms/' + id).remove(); };
-          div.appendChild(del);
-
-          const pwBtn = document.createElement('button');
-          pwBtn.innerText = 'Lihat Password';
-          pwBtn.onclick = e => { e.stopPropagation(); alert('Password: ' + (r.password || 'Tidak ada')); };
-          div.appendChild(pwBtn);
-        }
-
-        list.appendChild(div);
-      });
-    });
-  }
-
-  function cariRoom() {
-    tampilDaftarRoom(document.getElementById('cari').value);
-  }
-
-  // Buat room
-  function tampilBuat() {
-    document.getElementById('form-buat').classList.remove('hidden');
-  }
-  function sembunyiBuat() {
-    document.getElementById('form-buat').classList.add('hidden');
-  }
-
-  function buatRoom() {
-    const nama = document.getElementById('nama-room').value.trim();
-    const pw = document.getElementById('pw-room').value;
-    const max = parseInt(document.getElementById('max-anggota').value) || null;
-
-    if (!nama) return alert('Nama room wajib!');
-
-    const id = db.ref('rooms').push().key;
-    db.ref('rooms/' + id).set({
-      nama,
-      password: pw || null,
-      max,
-      dibuat: firebase.database.ServerValue.TIMESTAMP
-    });
-
-    sembunyiBuat();
-    tampilDaftarRoom();
-  }
-
-  // Gabung room
-  function gabungRoom(id, pw) {
-    if (pw) {
-      const input = prompt('Masukkan password:');
-      if (input !== pw) return alert('Password salah!');
-    }
-
-    document.getElementById('pesan-container').innerHTML = '';
-    if (currentListener) currentListener.off();
-
-    roomSaatIni = id;
-    document.getElementById('dashboard').classList.add('hidden');
-    document.getElementById('chat').classList.remove('hidden');
-    document.getElementById('nama-room-saatini').textContent = 'Room: ' + id;
-
-    const ref = db.ref('rooms/' + id + '/pesan');
-    currentListener = ref;
-
-    ref.on('child_added', snapshot => {
-      tambahPesan(snapshot.val(), snapshot.key); // Tambah snapshot.key untuk ID pesan (hapus)
-    });
-  }
-
-  function kembali() {
-    roomSaatIni = null;
-    if (currentListener) currentListener.off();
-    document.getElementById('chat').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    tampilDaftarRoom();
-  }
-
-  function tambahPesan(msg, msgId) {
-    const div = document.createElement('div');
-    div.className = `pesan ${msg.pengirim === namaUser ? 'kirim' : 'terima'}`;
-    div.dataset.msgId = msgId; // Simpan ID pesan untuk hapus
-
-    let pengirim = msg.pengirim;
-    if (msg.pengirim.includes('{khusus:saurus}')) {
-      pengirim += ' <span class="owner-badge">OWNER</span>';
-    }
-
-    let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
-    
-    if (msg.tipe === 'teks') isi += msg.isi;
-    else if (msg.tipe === 'gambar') isi += `<img src="${msg.isi}" alt="Gambar">`;
-    else if (msg.tipe === 'suara') isi += `<audio controls src="${msg.isi}"></audio>`;
-    
-    div.innerHTML = isi;
-    document.getElementById('pesan-container').appendChild(div);
-    document.getElementById('pesan-container').scrollTop = document.getElementById('pesan-container').scrollHeight;
-
-    // Long press untuk hapus (hanya pesan sendiri)
-    div.addEventListener('touchstart', startLongPress);
-    div.addEventListener('touchend', endLongPress);
-  }
-
-  let longPressTimer;
-
-  function startLongPress(e) {
-    longPressTimer = setTimeout(() => {
-      const msgId = e.target.closest('.pesan').dataset.msgId;
-      if (e.target.closest('.pesan').classList.contains('kirim') && confirm('Hapus pesan ini untuk semua?')) {
-        db.ref('rooms/' + roomSaatIni + '/pesan/' + msgId).remove();
-      }
-    }, 800); // 800ms for long press
-  }
-
-  function endLongPress() {
-    clearTimeout(longPressTimer);
-  }
-
-  // Kirim teks
-  document.getElementById('kirim').onclick = () => {
-    const teks = document.getElementById('input-pesan').value.trim();
-    if (!teks) return;
-    db.ref('rooms/' + roomSaatIni + '/pesan').push({
-      pengirim: namaUser,
-      tipe: 'teks',
-      isi: teks,
-      waktu: firebase.database.ServerValue.TIMESTAMP
-    });
-    document.getElementById('input-pesan').value = '';
-  };
-
-  document.getElementById('input-pesan').onkeypress = e => {
-    if (e.key === 'Enter') document.getElementById('kirim').click();
-  };
-
-  // Gambar
-  document.getElementById('upload-gambar').onchange = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const ref = storage.ref('gambar/' + Date.now() + '_' + file.name);
-    ref.put(file).then(() => ref.getDownloadURL()).then(url => {
-      db.ref('rooms/' + roomSaatIni + '/pesan').push({
-        pengirim: namaUser,
-        tipe: 'gambar',
-        isi: url,
-        waktu: firebase.database.ServerValue.TIMESTAMP
-      });
-    });
-  };
-
-  // Voice note
-  document.getElementById('rekam').onclick = async () => {
-    if (sedangRekam) return;
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      recorder = new MediaRecorder(stream);
-      chunksAudio = [];
-
-      recorder.ondataavailable = e => chunksAudio.push(e.data);
-      recorder.onstop = async () => {
-        const blob = new Blob(chunksAudio, { type: 'audio/webm' });
-        const ref = storage.ref('suara/' + Date.now() + '.webm');
-        await ref.put(blob);
-        const url = await ref.getDownloadURL();
-
-        db.ref('rooms/' + roomSaatIni + '/pesan').push({
-          pengirim: namaUser,
-          tipe: 'suara',
-          isi: url,
-          waktu: firebase.database.ServerValue.TIMESTAMP
-        });
-      };
-
-      recorder.start();
-      sedangRekam = true;
-      document.getElementById('rekam-ui').classList.remove('hidden');
-
-      document.getElementById('stop-rekam').onclick = () => {
-        recorder.stop();
-        sedangRekam = false;
-        document.getElementById('rekam-ui').classList.add('hidden');
-      };
-      document.getElementById('batal-rekam').onclick = () => {
-        recorder.stop();
-        sedangRekam = false;
-        document.getElementById('rekam-ui').classList.add('hidden');
-      };
-    } catch (err) {
-      alert('Gagal akses mikrofon: ' + err.message);
-    }
-  };
-
-  // Telepon (simulasi, bisa berhubung seluruh orang di room dengan alert)
-  function mulaiTelepon() {
-    alert('Telepon horor dimulai... Semua orang di room terhubung dalam kegelapan!');
-    document.getElementById('telepon-ui').classList.remove('hidden');
-  }
-
-  function akhiriTelepon() {
-    document.getElementById('telepon-ui').classList.add('hidden');
-  }
+function call(){db.ref(`rooms/${room}/call`).set(true)}
+function endCall(){db.ref(`rooms/${room}/call`).remove()}
+function back(){location.reload()}
+function logout(){auth.signOut().then(()=>location.reload())}
 </script>
 </body>
-  </html>
+</html>
