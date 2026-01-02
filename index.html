@@ -2,33 +2,38 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat Horor - Saurus</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Chat Horor - By Saurus</title>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Creepster&display=swap" rel="stylesheet">
-
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
 :root{
-  --red:#8b0000;
-  --dark:#120000;
-  --gold:#ffd700;
+  --red:#8B0000;
+  --dark:#1a0000;
+  --gold:#FFD700;
 }
-*{box-sizing:border-box}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
 body{
-  margin:0;
   font-family:Poppins,sans-serif;
-  background:linear-gradient(to bottom,#200,#000);
+  background:url('https://images.unsplash.com/photo-1534790735596-8fce982f394b') center/cover fixed;
   color:#fff;
-  height:100vh;
   overflow:hidden;
 }
-.hidden{display:none}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(to bottom,rgba(139,0,0,.5),rgba(26,0,0,.9));
+}
 
 .screen{
   position:absolute;
@@ -37,250 +42,244 @@ body{
   flex-direction:column;
 }
 
-/* LOGIN */
-.login-box{
+.hidden{display:none}
+
+.box{
   margin:auto;
-  background:rgba(0,0,0,.6);
+  background:rgba(139,0,0,.6);
   padding:40px;
   border-radius:20px;
-  border:2px solid var(--red);
+  max-width:90vw;
   text-align:center;
+  border:3px solid var(--red);
 }
-.login-box h1{
+
+h1{
   font-family:Creepster;
   font-size:3rem;
 }
-input{
+
+input,button{
   width:100%;
   padding:15px;
   margin-top:15px;
-  border-radius:12px;
+  border-radius:15px;
   border:none;
-}
-button{
-  margin-top:15px;
-  padding:15px;
-  width:100%;
-  border:none;
-  border-radius:12px;
-  background:var(--red);
-  color:#fff;
   font-size:1.1rem;
+}
+
+input{
+  background:rgba(0,0,0,.4);
+  color:#fff;
+}
+
+button{
+  background:var(--red);
+  color:white;
   cursor:pointer;
 }
 
-/* DASHBOARD */
 .header{
   padding:15px;
-  background:rgba(139,0,0,.8);
+  background:rgba(139,0,0,.85);
   display:flex;
   justify-content:space-between;
+  align-items:center;
 }
+
 #daftar-room{
-  padding:20px;
-  overflow-y:auto;
   flex:1;
+  overflow-y:auto;
+  padding:20px;
 }
-.room{
-  background:rgba(255,255,255,.1);
+
+.room-item{
+  background:rgba(255,255,255,.12);
   padding:15px;
-  border-radius:15px;
   margin-bottom:15px;
+  border-radius:15px;
   cursor:pointer;
 }
 
-/* CHAT */
-#pesan{
+#pesan-container{
   flex:1;
-  padding:15px;
   overflow-y:auto;
+  padding:20px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
 }
-.msg{
-  max-width:75%;
-  padding:12px;
-  border-radius:15px;
+
+.pesan{
+  max-width:80%;
+  padding:12px 16px;
+  border-radius:20px;
 }
+
 .kirim{background:var(--red);align-self:flex-end}
-.terima{background:rgba(255,255,255,.15)}
-.owner{
-  background:linear-gradient(45deg,#ffd700,#ffae00);
-  color:#000;
-  padding:3px 8px;
-  border-radius:10px;
-  margin-left:5px;
-  font-size:.8rem;
+.terima{background:rgba(255,255,255,.2)}
+
+.pengirim{
+  font-family:Creepster;
+  font-size:1rem;
+  display:block;
+  margin-bottom:5px;
 }
+
+.owner-badge{
+  background:linear-gradient(45deg,var(--gold),orange);
+  color:black;
+  padding:4px 10px;
+  border-radius:15px;
+  margin-left:8px;
+  font-weight:bold;
+}
+
 .input-area{
   display:flex;
   gap:10px;
-  padding:10px;
-  background:#1a0000;
-}
-.input-area input{
-  flex:1;
+  padding:15px;
+  background:rgba(139,0,0,.85);
 }
 
-/* TELEPON */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:flex;
-  justify-content:center;
-  align-items:center;
+#input-pesan{
+  flex:1;
+  border-radius:30px;
 }
-.modal .box{
-  background:#200;
-  padding:30px;
-  border-radius:20px;
-  text-align:center;
+
+.icon-btn{
+  width:55px;
+  height:55px;
+  border-radius:50%;
 }
 </style>
 </head>
 
 <body>
+<div class="overlay"></div>
+
+<audio autoplay loop>
+  <source src="https://www.soundjay.com/horror/horror-ambience-1.mp3">
+</audio>
 
 <!-- LOGIN -->
 <div id="login" class="screen">
-  <div class="login-box">
+  <div class="box">
     <h1>Chat Horor</h1>
     <p>By Saurus</p>
     <input id="nama" placeholder="Nama kamu">
-    <button onclick="login()">Masuk</button>
+    <button onclick="masuk()">Masuk</button>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="screen hidden">
   <div class="header">
-    <b>Daftar Room</b>
-    <button onclick="logout()">Keluar</button>
+    <h3>Daftar Room</h3>
+    <button onclick="keluar()">Logout</button>
   </div>
+  <button onclick="tampilBuat()">+ Buat Room</button>
   <div id="daftar-room"></div>
-  <button onclick="buatRoom()">+ Buat Room</button>
 </div>
 
 <!-- CHAT -->
 <div id="chat" class="screen hidden">
   <div class="header">
-    <button onclick="back()">←</button>
-    <span id="roomName"></span>
-    <button onclick="openCall()">📞</button>
+    <button onclick="kembali()">←</button>
+    <h3 id="nama-room-saatini">Room</h3>
   </div>
-
-  <div id="pesan"></div>
-
+  <div id="pesan-container"></div>
   <div class="input-area">
-    <input id="text">
-    <button onclick="kirim()">➤</button>
-  </div>
-</div>
-
-<!-- TELEPON -->
-<div id="call" class="modal hidden">
-  <div class="box">
-    <h2>Telepon Horor</h2>
-    <p>Suara dari kegelapan...</p>
-    <button onclick="closeCall()">Akhiri</button>
+    <input id="input-pesan" placeholder="Ketik pesan...">
+    <button class="icon-btn" id="kirim">➤</button>
   </div>
 </div>
 
 <script>
-/* FIREBASE */
-firebase.initializeApp({
+const firebaseConfig={
   apiKey:"AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
   authDomain:"saurusproject-6974b.firebaseapp.com",
   databaseURL:"https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId:"saurusproject-6974b",
-  storageBucket:"saurusproject-6974b.appspot.com"
-});
+  storageBucket:"saurusproject-6974b.appspot.com",
+  messagingSenderId:"519472343742",
+  appId:"1:519472343742:web:xxxxxxxx"
+};
+
+firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.database();
 
-/* STATE */
-let user="", roomId="", isOwner=false;
+let namaUser="",roomSaatIni=null;
 
-/* LOGIN */
-function login(){
-  user=document.getElementById("nama").value.trim();
-  if(!user) return alert("Isi nama");
-  isOwner=user.toLowerCase().includes("saurus");
+function masuk(){
+  namaUser=document.getElementById("nama").value.trim();
+  if(!namaUser)return alert("Nama wajib diisi");
+
   auth.signInAnonymously().then(()=>{
-    loginHide();
-    loadRooms();
+    login.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    tampilRoom();
   });
 }
-function loginHide(){
-  login.classList.add("hidden");
-  dashboard.classList.remove("hidden");
-}
-function logout(){
+
+function keluar(){
   auth.signOut().then(()=>location.reload());
 }
 
-/* ROOM */
-function loadRooms(){
+function tampilRoom(){
   db.ref("rooms").on("value",snap=>{
     daftar-room.innerHTML="";
-    snap.forEach(r=>{
-      let d=document.createElement("div");
-      d.className="room";
-      d.textContent=r.val().nama;
-      d.onclick=()=>join(r.key,r.val().nama);
+    const rooms=snap.val()||{};
+    for(const id in rooms){
+      const r=rooms[id];
+      const d=document.createElement("div");
+      d.className="room-item";
+      d.innerText=r.nama;
+      d.onclick=()=>gabung(id,r.password);
       daftar-room.appendChild(d);
-    });
-  });
-}
-function buatRoom(){
-  let nama=prompt("Nama room?");
-  if(!nama)return;
-  db.ref("rooms").push({nama});
-}
-function join(id,nama){
-  roomId=id;
-  dashboard.classList.add("hidden");
-  chat.classList.remove("hidden");
-  roomName.textContent=nama;
-  pesan.innerHTML="";
-  db.ref("rooms/"+id+"/msg").on("child_added",s=>{
-    render(s.val());
+    }
   });
 }
 
-/* CHAT */
-function kirim(){
-  let t=text.value.trim();
-  if(!t)return;
-  db.ref("rooms/"+roomId+"/msg").push({
-    u:user,
-    t:t,
-    o:isOwner
+function gabung(id,pw){
+  if(pw){
+    const i=prompt("Password:");
+    if(i!==pw)return alert("Salah");
+  }
+  roomSaatIni=id;
+  dashboard.classList.add("hidden");
+  chat.classList.remove("hidden");
+  nama-room-saatini.innerText=id;
+
+  pesan-container.innerHTML="";
+  db.ref("rooms/"+id+"/pesan").on("child_added",s=>{
+    const m=s.val();
+    const d=document.createElement("div");
+    d.className="pesan "+(m.pengirim===namaUser?"kirim":"terima");
+    let nama=m.pengirim;
+    if(nama.toLowerCase()==="saurus") nama+=' <span class="owner-badge">OWNER</span>';
+    d.innerHTML=`<span class="pengirim">${nama}</span>${m.isi}`;
+    pesan-container.appendChild(d);
+    pesan-container.scrollTop=999999;
   });
-  text.value="";
 }
-function render(m){
-  let d=document.createElement("div");
-  d.className="msg "+(m.u===user?"kirim":"terima");
-  d.innerHTML=`<b>${m.u}${m.o?'<span class="owner">OWNER</span>':''}</b><br>${m.t}`;
-  pesan.appendChild(d);
-  pesan.scrollTop=pesan.scrollHeight;
-}
-function back(){
+
+kirim.onclick=()=>{
+  const t=input-pesan.value.trim();
+  if(!t)return;
+  db.ref("rooms/"+roomSaatIni+"/pesan").push({
+    pengirim:namaUser,
+    isi:t,
+    waktu:Date.now()
+  });
+  input-pesan.value="";
+};
+
+function kembali(){
   chat.classList.add("hidden");
   dashboard.classList.remove("hidden");
 }
-
-/* TELEPON */
-function openCall(){
-  document.getElementById("call").classList.remove("hidden");
-}
-function closeCall(){
-  document.getElementById("call").classList.add("hidden");
-}
 </script>
-
 </body>
 </html>
