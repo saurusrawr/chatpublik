@@ -3,13 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Room Dinosaurus - By Saurus</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Firebase SDK -->
+  <title>Chat Room - By Saurus</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Press+Start+2P&display=swap');
+
+    :root {
+      --primary: #7B2CBF;
+      --accent: #9D4EDD;
+      --light: #E0AAFF;
+      --dark: #240046;
+      --owner-gold: #FFD700;
+      --bg-gradient: linear-gradient(135deg, #240046 0%, #3C096C 50%, #7B2CBF 100%);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--light);
+      min-height: 100vh;
+      background-attachment: fixed;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .overlay { 
+      position: fixed; inset: 0; 
+      background: radial-gradient(circle at 30% 70%, rgba(123,44,191,0.3) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: pulse 15s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      100% { opacity: 0.9; }
+    }
+
+    .screen { 
+      position: absolute; inset: 0; 
+      display: flex; flex-direction: column; 
+      transition: opacity .5s ease; 
+      animation: fadeIn 1s;
+    }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    .box { 
+      background: rgba(36,0,70,0.6);
+      backdrop-filter: blur(20px);
+      padding: 50px 40px;
+      border-radius: 30px;
+      max-width: 500px;
+      width: 90%;
+      margin: auto;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(123,44,191,0.5);
+      border: 2px solid var(--primary);
+    }
+
+    h1 { 
+      font-size: 3.5rem; 
+      margin-bottom: 20px; 
+      background: linear-gradient(90deg, var(--light), white); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      font-family: 'Press Start 2P', cursive;
+      text-shadow: 0 4px 15px rgba(157,78,221,0.6);
+    }
+
+    input { 
+      width: 100%; padding: 18px; margin: 15px 0; 
+      border: 2px solid var(--primary); border-radius: 15px; 
+      font-size: 1.2rem; background: rgba(255,255,255,0.08); color: white; 
+    }
+
+    button { 
+      background: var(--accent); color: white; padding: 16px; border: none; 
+      border-radius: 15px; font-size: 1.2rem; cursor: pointer; transition: all .3s;
+      font-family: 'Press Start 2P', cursive; letter-spacing: 1px;
+    }
+    button:hover { transform: scale(1.05); box-shadow: 0 10px 30px var(--accent); }
+
+    .header { 
+      background: rgba(36,0,70,0.8); padding: 20px; 
+      display: flex; justify-content: space-between; align-items: center; 
+      border-bottom: 3px solid var(--primary);
+    }
+
+    #daftar-room { padding: 30px; overflow-y: auto; flex: 1; }
+    .room-item { 
+      background: rgba(255,255,255,0.1); padding: 20px; margin: 15px 0; 
+      border-radius: 20px; cursor: pointer; transition: all .3s;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px var(--primary); }
+    .room-item.vip { background: rgba(139,69,19,0.4); border: 2px solid var(--owner-gold); }
+    .delete-btn { background: #ff4757; font-size: 1rem; padding: 10px 20px; margin-top: 12px; }
+
+    #pesan-container { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 16px; }
+    .pesan { max-width: 80%; padding: 12px 18px; border-radius: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .pesan.kirim { background: var(--primary); align-self: flex-end; }
+    .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
+    .pesan .pengirim { font-size: 1rem; opacity: 0.85; display: block; margin-bottom: 6px; }
+    .pesan img { max-width: 100%; border-radius: 14px; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .pesan audio { margin-top: 8px; width: 100%; max-width: 340px; }
+    .owner-badge { 
+      background: linear-gradient(45deg, var(--owner-gold), #FFA500);
+      color: #000; font-size: 0.9rem; padding: 4px 12px; border-radius: 20px; 
+      margin-left: 12px; font-weight: bold; font-family: 'Press Start 2P', cursive; 
+      box-shadow: 0 3px 12px rgba(255,215,0,0.7); animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 3px 10px rgba(255,215,0,0.4); }
+      to { box-shadow: 0 3px 20px rgba(255,215,0,0.8); }
+    }
+
+    .input-area { 
+      background: rgba(36,0,70,0.7); padding: 16px; display: flex; gap: 14px; 
+      position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.4);
+    }
+    #input-pesan { flex: 1; border-radius: 35px; background: rgba(255,255,255,0.18); color: white; padding: 16px; border: none; font-size: 1.1rem; }
+    #kirim, .attach, #rekam { width: 58px; height: 58px; border-radius: 50%; border: none; background: var(--accent); color: white; font-size: 1.5rem; cursor: pointer; transition: all .3s; }
+    #kirim:hover, .attach:hover, #rekam:hover { transform: rotate(360deg); box-shadow: 0 6px 20px var(--accent); }
+    .attach { background: var(--primary); display: grid; place-items: center; }
+
+    .rekam-ui { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); padding: 16px 32px; border-radius: 45px; display: flex; gap: 20px; align-items: center; box-shadow: 0 8px 25px rgba(0,0,0,0.6); }
+    .modal { display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.75); position: fixed; inset: 0; z-index: 10; }
+    .modal.hidden { display: none; }
+  </style>
 </head>
 <body>
 
@@ -18,8 +144,8 @@
 <!-- Login -->
 <div id="login" class="screen">
   <div class="box">
-    <h1>Chat Room Dinosaurus</h1>
-    <p style="margin:15px 0; opacity:0.9;">By Saurus</p>
+    <h1>Chat Room</h1>
+    <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
     <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
   </div>
@@ -56,7 +182,6 @@
   <div class="header">
     <button onclick="kembali()">←</button>
     <h2 id="nama-room-saatini">Room</h2>
-    <button id="call-btn" onclick="mulaiCall()" style="display:none;">📞 Telepon</button>
   </div>
   <div id="pesan-container"></div>
   <div class="input-area">
@@ -71,25 +196,233 @@
   </div>
 </div>
 
-<!-- Voice Call UI -->
-<div id="call-ui" class="modal hidden">
-  <div class="box">
-    <h3>Telepon Suara</h3>
-    <p>Menghubungkan...</p>
-    <button onclick="akhiriCall()">Akhiri Panggilan</button>
-  </div>
-</div>
-
 <script type="module">
-  import { firebaseConfig } from './firebase-config.js';
+  // Ganti dengan config Firebase kamu
+  const firebaseConfig = {
+    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+    authDomain: "saurusproject-6974b.firebaseapp.com",
+    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "saurusproject-6974b",
+    storageBucket: "saurusproject-6974b.appspot.com",
+    messagingSenderId: "519472343742",
+    appId: "1:519472343742:web:xxxxxxxxxxxxxxxx" // Ganti kalau punya
+  };
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
   const storage = firebase.storage();
 
-  // ... (kode JavaScript lengkap di main.js) ...
+  let namaUser = '';
+  let isOwner = false;
+  let roomSaatIni = null;
+  let sedangRekam = false;
+  let recorder, chunksAudio = [];
+  let currentListener = null;
+
+  // Login + cek owner mode rahasia
+  function masuk() {
+    namaUser = document.getElementById('nama').value.trim();
+    if (!namaUser) return alert('Nama wajib diisi!');
+
+    // Mode owner: pola rahasia {khusus:apaaja}
+    isOwner = namaUser.match(/\{khusus:.*\}/i) !== null;
+    if (isOwner) namaUser = namaUser.replace(/\{khusus:|\}/gi, '').trim(); // hapus kode
+
+    auth.signInAnonymously().then(() => {
+      document.getElementById('login').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      tampilDaftarRoom();
+    }).catch(err => alert('Gagal masuk: ' + err.message));
+  }
+
+  // Logout
+  function keluar() {
+    if (confirm('Yakin logout?')) auth.signOut().then(() => location.reload());
+  }
+
+  // Tampil daftar room
+  function tampilDaftarRoom(kata = '') {
+    db.ref('rooms').once('value').then(snapshot => {
+      const list = document.getElementById('daftar-room');
+      list.innerHTML = '';
+      const rooms = snapshot.val() || {};
+
+      Object.keys(rooms).forEach(id => {
+        const r = rooms[id];
+        if (kata && !r.nama.toLowerCase().includes(kata.toLowerCase())) return;
+
+        const div = document.createElement('div');
+        div.className = 'room-item';
+        div.innerHTML = `<strong>${r.nama}</strong><br><small>Max: ${r.max || '∞'}</small>`;
+        div.onclick = () => gabungRoom(id, r.password);
+
+        if (isOwner) {
+          const del = document.createElement('button');
+          del.innerText = 'Hapus Room';
+          del.className = 'delete-btn';
+          del.onclick = e => { e.stopPropagation(); if (confirm('Hapus?')) db.ref('rooms/' + id).remove(); };
+          div.appendChild(del);
+
+          const pwBtn = document.createElement('button');
+          pwBtn.innerText = 'Lihat Password';
+          pwBtn.onclick = e => { e.stopPropagation(); alert('Password: ' + (r.password || 'Tidak ada')); };
+          div.appendChild(pwBtn);
+        }
+
+        list.appendChild(div);
+      });
+    });
+  }
+
+  function cariRoom() {
+    tampilDaftarRoom(document.getElementById('cari').value);
+  }
+
+  // Buat room
+  function tampilBuat() {
+    document.getElementById('form-buat').classList.remove('hidden');
+  }
+  function sembunyiBuat() {
+    document.getElementById('form-buat').classList.add('hidden');
+  }
+
+  function buatRoom() {
+    const nama = document.getElementById('nama-room').value.trim();
+    const pw = document.getElementById('pw-room').value;
+    const max = parseInt(document.getElementById('max-anggota').value) || null;
+
+    if (!nama) return alert('Nama room wajib!');
+
+    const id = db.ref('rooms').push().key;
+    db.ref('rooms/' + id).set({
+      nama,
+      password: pw || null,
+      max,
+      dibuat: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    sembunyiBuat();
+    tampilDaftarRoom();
+  }
+
+  // Gabung room
+  function gabungRoom(id, pw) {
+    if (pw) {
+      const input = prompt('Masukkan password:');
+      if (input !== pw) return alert('Password salah!');
+    }
+
+    document.getElementById('pesan-container').innerHTML = '';
+    if (currentListener) currentListener.off();
+
+    roomSaatIni = id;
+    document.getElementById('dashboard').classList.add('hidden');
+    document.getElementById('chat').classList.remove('hidden');
+    document.getElementById('nama-room-saatini').textContent = 'Room: ' + id;
+
+    const ref = db.ref('rooms/' + id + '/pesan');
+    currentListener = ref;
+
+    ref.on('child_added', snapshot => {
+      tambahPesan(snapshot.val());
+    });
+  }
+
+  function kembali() {
+    roomSaatIni = null;
+    if (currentListener) currentListener.off();
+    document.getElementById('chat').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    tampilDaftarRoom();
+  }
+
+  function tambahPesan(msg) {
+    const div = document.createElement('div');
+    div.className = `pesan ${msg.pengirim === namaUser ? 'kirim' : 'terima'}`;
+
+    let pengirim = msg.pengirim;
+    if (msg.pengirim.match(/\{khusus:.*\}/i)) pengirim += ' <span class="owner-badge">OWNER</span>';
+
+    let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
+    
+    if (msg.tipe === 'teks') isi += msg.isi;
+    else if (msg.tipe === 'gambar') isi += `<img src="${msg.isi}" alt="Gambar">`;
+    else if (msg.tipe === 'suara') isi += `<audio controls src="${msg.isi}"></audio>`;
+    
+    div.innerHTML = isi;
+    document.getElementById('pesan-container').appendChild(div);
+    document.getElementById('pesan-container').scrollTop = document.getElementById('pesan-container').scrollHeight;
+  }
+
+  // Kirim teks
+  document.getElementById('kirim').onclick = () => {
+    const teks = document.getElementById('input-pesan').value.trim();
+    if (!teks) return;
+    db.ref('rooms/' + roomSaatIni + '/pesan').push({
+      pengirim: namaUser,
+      tipe: 'teks',
+      isi: teks,
+      waktu: firebase.database.ServerValue.TIMESTAMP
+    });
+    document.getElementById('input-pesan').value = '';
+  };
+
+  document.getElementById('input-pesan').onkeypress = e => {
+    if (e.key === 'Enter') document.getElementById('kirim').click();
+  };
+
+  // Gambar
+  document.getElementById('upload-gambar').onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const ref = storage.ref('gambar/' + Date.now() + '_' + file.name);
+    ref.put(file).then(() => ref.getDownloadURL()).then(url => {
+      db.ref('rooms/' + roomSaatIni + '/pesan').push({
+        pengirim: namaUser,
+        tipe: 'gambar',
+        isi: url,
+        waktu: firebase.database.ServerValue.TIMESTAMP
+      });
+    });
+  };
+
+  // Voice note
+  document.getElementById('rekam').onclick = async () => {
+    if (sedangRekam) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      recorder = new MediaRecorder(stream);
+      chunksAudio = [];
+
+      recorder.ondataavailable = e => chunksAudio.push(e.data);
+      recorder.onstop = async () => {
+        const blob = new Blob(chunksAudio, { type: 'audio/webm' });
+        const ref = storage.ref('suara/' + Date.now() + '.webm');
+        await ref.put(blob);
+        const url = await ref.getDownloadURL();
+
+        db.ref('rooms/' + roomSaatIni + '/pesan').push({
+          pengirim: namaUser,
+          tipe: 'suara',
+          isi: url,
+          waktu: firebase.database.ServerValue.TIMESTAMP
+        });
+      };
+
+      recorder.start();
+      sedangRekam = true;
+      document.getElementById('rekam-ui').classList.remove('hidden');
+
+      document.getElementById('stop-rekam').onclick = () => {
+        recorder.stop();
+        sedangRekam = false;
+        document.getElementById('rekam-ui').classList.add('hidden');
+      };
+    } catch (err) {
+      alert('Gagal akses mikrofon: ' + err.message);
+    }
+  };
 </script>
-<script src="main.js"></script>
 </body>
 </html>
