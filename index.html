@@ -52,8 +52,8 @@
       <i class="fas fa-shopping-cart text-xl"></i>
       <span id="cartCount" class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
     </button>
-    <button onclick="openAdmin()" class="text-primary">
-      <i class="fas fa-user-shield text-xl"></i>
+    <button onclick="logout()" class="text-primary">
+      <i class="fas fa-sign-out-alt text-xl"></i>
     </button>
   </div>
 </header>
@@ -73,17 +73,13 @@
 <!-- BOT -->
 <section id="bot" class="page active px-4 mt-6 space-y-4">
   <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
-  <div id="botList" class="space-y-4">
-    <!-- Produk dari Firebase -->
-  </div>
+  <div id="botList" class="space-y-4"></div>
 </section>
 
 <!-- PANEL -->
 <section id="panel" class="page px-4 mt-6 space-y-4">
   <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
-  <div id="panelList" class="space-y-4">
-    <!-- Produk dari Firebase -->
-  </div>
+  <div id="panelList" class="space-y-4"></div>
 </section>
 
 <!-- CART -->
@@ -133,7 +129,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// Keranjang lokal
+// Variabel global
 let cart = [];
 let namaUser = '';
 
@@ -142,7 +138,7 @@ function masuk() {
   namaUser = document.getElementById('nama').value.trim();
   if (!namaUser) return alert('Nama wajib diisi!');
 
-  // Admin panel hanya kalau nama PERSIS {khusus:owner}
+  // Owner mode hanya kalau nama PERSIS {khusus:owner}
   const isOwner = namaUser === '{khusus:owner}';
   if (isOwner) namaUser = 'Owner';
 
@@ -150,11 +146,22 @@ function masuk() {
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('user-name').textContent = namaUser;
 
-  // Tampil admin panel hanya kalau owner
+  // Admin panel hanya kalau owner
   if (isOwner) document.getElementById('admin').classList.add('active');
 
   renderProduk();
   updateCart();
+}
+
+// Logout (kembali ke login)
+function logout() {
+  if (confirm('Yakin logout?')) {
+    cart = []; // kosongkan keranjang
+    namaUser = '';
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+    document.getElementById('nama').value = '';
+  }
 }
 
 // Render produk dari Firebase
@@ -186,13 +193,11 @@ function renderProduk() {
     });
   });
 
-  // Custom nama bot dari Firebase
+  // Custom nama bot
   db.ref('botName').on('value', snapshot => {
-    const botTitle = document.getElementById('botTitle');
-    const botDesc = document.getElementById('botDesc');
     const nama = snapshot.val() || 'Luna AI MD v7.00';
-    botTitle.textContent = 'SEWA BOT - ' + nama;
-    botDesc.textContent = nama;
+    document.getElementById('botTitle').textContent = 'SEWA BOT - ' + nama;
+    document.getElementById('botDesc').textContent = nama;
   });
 }
 
