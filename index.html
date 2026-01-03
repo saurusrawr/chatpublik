@@ -24,7 +24,7 @@
       font-family: 'Poppins', sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
+      min-h height: 100vh;
       background-image: 
         radial-gradient(circle at 20% 30%, rgba(109,40,217,0.15) 0%, transparent 10%),
         radial-gradient(circle at 80% 70%, rgba(109,40,217,0.12) 0%, transparent 10%),
@@ -87,7 +87,7 @@
   <div class="box">
     <h1>Saurus Galaxy Chat</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
-    <input type="text" id="nama" placeholder="Nama kamu... (contoh: saudrus)">
+    <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
   </div>
 </div>
@@ -154,24 +154,22 @@ function masuk() {
   if (!inputNama) return alert('Nama wajib diisi!');
 
   // Cek owner mode
-  isOwner = inputNama.startsWith('{khusus:') && inputNama.endsWith('}');
-  if (isOwner) {
+  if (inputNama.startsWith('{khusus:') && inputNama.endsWith('}')) {
+    isOwner = true;
     namaUser = inputNama.substring(9, inputNama.length - 1); // ambil nama di tengah {khusus:nama}
   } else {
+    isOwner = false;
     namaUser = inputNama;
   }
 
-  // Cek kalau nama banned
-  db.ref('bannedUsers/' + namaUser).once('value').then(snap => {
-    if (snap.exists()) return alert('Nama ini dibanned! Gunakan nama lain.');
-    document.getElementById('login').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
-    tampilDaftarRoom();
-  });
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  tampilDaftarRoom();
 }
 
 function logout() {
   namaUser = '';
+  isOwner = false;
   roomSaatIni = null;
   if (currentListener) currentListener.off();
   document.getElementById('chat').classList.add('hidden');
@@ -193,6 +191,7 @@ function tampilDaftarRoom(kata = '') {
       const div = document.createElement('div');
       div.className = 'room-item';
       div.innerHTML = `<strong>${r.nama}</strong>`;
+
       div.onclick = () => gabungRoom(id, r.password);
 
       if (isOwner) {
@@ -207,18 +206,6 @@ function tampilDaftarRoom(kata = '') {
         delBtn.innerText = 'Hapus Room';
         delBtn.onclick = e => { e.stopPropagation(); if (confirm('Hapus room?')) db.ref('rooms/' + id).remove(); };
         div.appendChild(delBtn);
-
-        const banBtn = document.createElement('button');
-        banBtn.className = 'owner-btn';
-        banBtn.innerText = 'Ban User';
-        banBtn.onclick = e => { e.stopPropagation(); const banName = prompt('Nama user untuk ban:'); if (banName) db.ref('bannedUsers/' + banName).set(true); };
-        div.appendChild(banBtn);
-
-        const unbanBtn = document.createElement('button');
-        unbanBtn.className = 'owner-btn';
-        unbanBtn.innerText = 'Unban User';
-        unbanBtn.onclick = e => { e.stopPropagation(); const unbanName = prompt('Nama user untuk unban:'); if (unbanName) db.ref('bannedUsers/' + unbanName).remove(); };
-        div.appendChild(unbanBtn);
       }
 
       list.appendChild(div);
@@ -307,7 +294,7 @@ function tambahPesan(msg, msgId) {
 }
 
 function copyPesan(btn) {
-  const pesan = btn.parentElement.parentElement.querySelector('div').textContent || btn.parentElement.parentElement.querySelector('img').src;
+  const pesan = btn.parentElement.previousSibling.textContent;
   navigator.clipboard.writeText(pesan).then(() => alert('Pesan dicopy!'));
 }
 
