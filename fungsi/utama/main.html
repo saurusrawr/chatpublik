@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Public - Saurus, karna gbut</title>
+  <title>Chat Galaxy - Saurus</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Creepster&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Poppins:wght@400;600;700&display=swap');
 
     :root {
       --bg: #0f0e17;
@@ -85,10 +85,12 @@
       color: black; 
       padding: 4px 12px; 
       border-radius: 12px; 
-      font-size: 1rem; 
+      font-size: 1.1rem; 
       margin-left: 8px; 
-      box-shadow: 0 0 10px var(--bot); 
+      box-shadow: 0 0 15px var(--bot); 
       font-weight: bold; 
+      font-family: 'Creepster', cursive; 
+      letter-spacing: 1px;
     }
 
     .input-area { background: rgba(0,0,0,0.5); padding: 12px; display: flex; gap: 12px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
@@ -108,9 +110,9 @@
 
 <div id="login" class="screen">
   <div class="box">
-    <h1 class="glow">Saurus Public Chat</h1>
+    <h1 class="glow">Saurus Galaxy Chat</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
-    <input type="text" id="nama" placeholder="Nama kamu...">
+    <input type="text" id="nama" placeholder="Nama kamu..">
     <button onclick="masuk()">Masuk</button>
   </div>
 </div>
@@ -375,6 +377,8 @@ function hapusPesanDiri(btn) {
 
 // Setting bot (owner only, di luar room)
 function tampilSettingBot() {
+  // Tambahan pengecekan owner biar aman
+  if (!isOwner) return alert('Akses ditolak! Hanya owner yang bisa setting bot.');
   document.getElementById('bot-setting-modal').style.display = 'flex';
 }
 
@@ -399,7 +403,7 @@ function kirimKeRoom() {
       const rooms = snap.val() || {};
       if (rooms[room]) {
         db.ref('rooms/' + room + '/pesan').push({
-          pengirim: 'BOT ' + name,
+          pengirim: '' + name,
           tipe: 'teks',
           isi: text,
           waktu: firebase.database.ServerValue.TIMESTAMP
@@ -420,7 +424,7 @@ function kirimKeSemuaRoom() {
       const rooms = snap.val() || {};
       Object.keys(rooms).forEach(roomId => {
         db.ref('rooms/' + roomId + '/pesan').push({
-          pengirim: 'BOT ' + name,
+          pengirim: '' + name,
           tipe: 'teks',
           isi: text,
           waktu: firebase.database.ServerValue.TIMESTAMP
