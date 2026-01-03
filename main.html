@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Poppins:wght@400;600;700&display=swap');
 
     :root {
       --bg: #0f0e17;
@@ -17,6 +17,7 @@
       --star: #ffffff;
       --text: #e0e7ff;
       --gold: #ffd700;
+      --bot: #ffeb3b;
     }
 
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -60,15 +61,35 @@
     #daftar-room { padding: 20px; overflow-y: auto; flex: 1; }
     .room-item { background: rgba(109,40,217,0.15); padding: 16px; margin: 12px 0; border-radius: 15px; cursor: pointer; transition: all .3s; border: 1px solid var(--light-purple); }
     .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(109,40,217,0.4); }
-    .owner-btn { background: var(--gold); color: black; padding: 8px; margin-top: 8px; border-radius: 8px; font-size: 0.9rem; }
 
     #pesan-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
     .pesan { max-width: 80%; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); position: relative; }
     .pesan.kirim { background: var(--purple); align-self: flex-end; }
     .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
-    .pesan .pengirim { font-size: 0.95rem; opacity: 0.8; display: block; margin-bottom: 4px; position: relative; }
+    .pesan .pengirim { font-size: 0.95rem; opacity: 0.8; display: block; margin-bottom: 4px; }
     .pesan img { max-width: 100%; border-radius: 12px; margin-top: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-    .owner-badge { background: var(--gold); color: black; padding: 4px 10px; border-radius: 12px; font-size: 0.9rem; margin-left: 8px; box-shadow: 0 0 10px var(--gold); font-weight: bold; }
+    .owner-badge { 
+      background: var(--gold); 
+      color: black; 
+      padding: 4px 12px; 
+      border-radius: 12px; 
+      font-size: 1rem; 
+      margin-left: 8px; 
+      box-shadow: 0 0 10px var(--gold); 
+      font-weight: bold; 
+      font-family: 'Creepster', cursive; 
+      letter-spacing: 1px;
+    }
+    .bot-badge { 
+      background: var(--bot); 
+      color: black; 
+      padding: 4px 12px; 
+      border-radius: 12px; 
+      font-size: 1rem; 
+      margin-left: 8px; 
+      box-shadow: 0 0 10px var(--bot); 
+      font-weight: bold; 
+    }
 
     .input-area { background: rgba(0,0,0,0.5); padding: 12px; display: flex; gap: 12px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
     #input-pesan { flex: 1; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; padding: 14px; border: none; font-size: 1.1rem; }
@@ -85,7 +106,7 @@
 
 <div id="login" class="screen">
   <div class="box">
-    <h1>Saurus Galaxy Chat</h1>
+    <h1 class="glow">Saurus Galaxy Chat</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
     <input type="text" id="nama" placeholder="Nama kamu... (contoh: {khusus:saurus})">
     <button onclick="masuk()">Masuk</button>
@@ -107,7 +128,7 @@
     <h3>Buat Room Baru</h3>
     <input type="text" id="nama-room" placeholder="Nama Room">
     <input type="password" id="pw-room" placeholder="Password (opsional)">
-    <input type="number" id="max-anggota" placeholder="Max anggota (0 = ∞)" min="0">
+    <input type="number" id="max-anggota" placeholder="Max anggota (kosong/0 = ∞)" min="0">
     <div style="display:flex;gap:12px;margin-top:20px;">
       <button onclick="buatRoom()">Buat</button>
       <button onclick="document.getElementById('form-buat').style.display='none'">Batal</button>
@@ -133,9 +154,8 @@
   <div class="box" style="max-width:400px;">
     <h3>Setting Bot Panduan</h3>
     <input type="text" id="bot-name" placeholder="Nama Bot (contoh: BOT PANDUAN SAURUS)">
-    <textarea id="bot-text" placeholder="Teks bot (per menit)" rows="4"></textarea>
-    <input type="text" id="bot-room" placeholder="Kirim ke room tertentu (kosong = semua room)">
-    <div style="display:flex;gap:12px;margin-top:20px;">
+    <textarea id="bot-text" placeholder="Teks bot yang akan muncul" rows="4"></textarea>
+    <div style="display:flex;gap:12px;margin-top:10px;">
       <button onclick="saveBotSetting()">Simpan</button>
       <button onclick="document.getElementById('setting-bot-modal').style.display='none'">Batal</button>
     </div>
@@ -314,6 +334,8 @@ function tambahPesan(msg, msgId) {
   if (msg.pengirim.startsWith('{khusus:') && msg.pengirim.endsWith('}')) {
     pengirim = msg.pengirim.substring(9, msg.pengirim.length - 1);
     pengirim += ' • <span class="owner-badge">OWNER👑</span>';
+  } else if (msg.pengirim.startsWith('BOT ')) {
+    pengirim = '<span class="bot-badge">' + pengirim + '</span>';
   }
 
   let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
@@ -346,12 +368,12 @@ function startBotPanduan() {
     const config = snap.val() || { name: 'BOT PANDUAN SAURUS', text: 'Selamat datang di chat room! Gunakan /kick nama untuk kick user, /ban nama untuk ban, /unban nama untuk unban.' };
     botInterval = setInterval(() => {
       db.ref('rooms/' + roomSaatIni + '/pesan').push({
-        pengirim: config.name,
+        pengirim: 'BOT ' + config.name,
         tipe: 'teks',
         isi: config.text,
         waktu: firebase.database.ServerValue.TIMESTAMP
       });
-    }, 60000); // setiap 1 menit
+    }, 60000);
   });
 }
 
@@ -363,31 +385,10 @@ function tampilSettingBot() {
 function saveBotSetting() {
   const name = document.getElementById('bot-name').value.trim() || 'BOT PANDUAN SAURUS';
   const text = document.getElementById('bot-text').value.trim();
-  const room = document.getElementById('bot-room').value.trim();
 
   if (!text) return alert('Teks bot wajib diisi!');
 
   db.ref('botConfig').set({ name, text });
-
-  if (room) {
-    db.ref('rooms/' + room + '/pesan').push({
-      pengirim: name,
-      tipe: 'teks',
-      isi: text,
-      waktu: firebase.database.ServerValue.TIMESTAMP
-    });
-  } else {
-    db.ref('rooms').once('value').then(snap => {
-      snap.forEach(r => {
-        db.ref('rooms/' + r.key + '/pesan').push({
-          pengirim: name,
-          tipe: 'teks',
-          isi: text,
-          waktu: firebase.database.ServerValue.TIMESTAMP
-        });
-      });
-    });
-  }
 
   alert('Setting bot tersimpan!');
   document.getElementById('setting-bot-modal').style.display = 'none';
@@ -400,7 +401,7 @@ document.getElementById('kirim').onclick = () => {
 
   if (isOwner && teks.startsWith('/kick ')) {
     const target = teks.substring(6).trim();
-    alert('User ' + target + ' dikick! (fitur simulasi, tambah logic ban kalau perlu)');
+    alert('User ' + target + ' dikick! (fitur simulasi)');
   } else if (isOwner && teks.startsWith('/ban ')) {
     const target = teks.substring(5).trim();
     db.ref('bannedUsers/' + target).set(true);
