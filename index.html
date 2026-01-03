@@ -1,192 +1,287 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Saurus Store</title>  <script src="https://cdn.tailwindcss.com"></script>  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary:'#0284c7',
-            secondary:'#0ea5e9',
-            text:'#0f172a',
-            textsoft:'#475569',
-            border:'#bae6fd'
-          }
-        }
-      }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Galaxy - Saurus</title>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    :root {
+      --bg: #0f0e17;
+      --purple: #6d28d9;
+      --light-purple: #a78bfa;
+      --star: #ffffff;
+      --text: #e0e7ff;
     }
-  </script>  <style>
-    body{background:linear-gradient(180deg,#e0f2fe,#f8fafc)}
-    .card{background:#fff;border:1px solid #bae6fd;box-shadow:0 4px 10px rgba(0,0,0,0.05)}
-    .btn{background:linear-gradient(135deg,#0284c7,#0ea5e9);color:#fff;transition:0.3s}
-    .btn:hover{opacity:0.9;transform:scale(1.02)}
-    .page{display:none}
-    .page.active{display:block}
-  </style></head>
-<body class="max-w-md mx-auto min-h-screen pb-28 text-text"><!-- HEADER --><header class="flex justify-between items-center p-4">
-  <div class="flex items-center gap-3">
-    <div class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center">
-      <i class="fas fa-store"></i>
-    </div>
-    <div>
-      <p class="font-bold text-primary" id="storeName">Saurus Store</p>
-      <p class="text-xs text-textsoft">DIGITAL MARKET</p>
-    </div>
-  </div>  <div class="flex gap-4">
-    <button onclick="showPage('cart')" class="relative text-primary">
-      <i class="fas fa-shopping-cart text-xl"></i>
-      <span id="cartCount"
-        class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-        0
-      </span>
-    </button>
-    <button onclick="openAdmin()" class="text-primary">
-      <i class="fas fa-user-shield text-xl"></i>
-    </button>
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { 
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(109,40,217,0.15) 0%, transparent 10%),
+        radial-gradient(circle at 80% 70%, rgba(109,40,217,0.12) 0%, transparent 10%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0.5px, transparent 1px);
+      background-size: 60px 60px;
+      overflow: hidden;
+    }
+
+    .screen { position: absolute; inset: 0; display: flex; flex-direction: column; transition: opacity .5s; }
+    .screen.hidden { opacity: 0; pointer-events: none; }
+
+    .box { 
+      background: rgba(109,40,217,0.2);
+      backdrop-filter: blur(12px);
+      padding: 40px 30px;
+      border-radius: 20px;
+      max-width: 420px;
+      width: 90%;
+      margin: auto;
+      text-align: center;
+      border: 1px solid var(--light-purple);
+      box-shadow: 0 0 30px rgba(109,40,217,0.3);
+    }
+
+    h1 { font-size: 2.8rem; margin-bottom: 20px; color: var(--light-purple); text-shadow: 0 0 15px var(--neon); }
+
+    input { width: 100%; padding: 16px; margin: 12px 0; border: 2px solid var(--light-purple); border-radius: 12px; background: rgba(255,255,255,0.05); color: white; font-size: 1.1rem; }
+    button { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 16px; border: none; border-radius: 12px; font-size: 1.2rem; cursor: pointer; transition: all .3s; }
+    button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--neon); }
+
+    .header { background: rgba(0,0,0,0.4); padding: 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--light-purple); }
+
+    #daftar-room { padding: 20px; overflow-y: auto; flex: 1; }
+    .room-item { background: rgba(109,40,217,0.15); padding: 16px; margin: 12px 0; border-radius: 15px; cursor: pointer; transition: all .3s; border: 1px solid var(--border); }
+    .room-item:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(109,40,217,0.4); }
+
+    #pesan-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .pesan { max-width: 80%; padding: 12px 16px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+    .pesan.kirim { background: var(--primary); align-self: flex-end; }
+    .pesan.terima { background: rgba(109,40,217,0.25); align-self: flex-start; }
+    .pesan .pengirim { font-size: 0.95rem; opacity: 0.8; display: block; margin-bottom: 4px; }
+    .pesan img { max-width: 100%; border-radius: 12px; margin-top: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+
+    .input-area { background: rgba(0,0,0,0.5); padding: 12px; display: flex; gap: 12px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
+    #input-pesan { flex: 1; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; padding: 14px; border: none; font-size: 1.1rem; }
+    #kirim, .attach { width: 54px; height: 54px; border-radius: 50%; border: none; background: var(--primary); color: white; font-size: 1.4rem; cursor: pointer; transition: all .3s; }
+    #kirim:hover, .attach:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--neon); }
+    .attach { background: var(--secondary); display: grid; place-items: center; }
+  </style>
+</head>
+
+<body>
+
+<div id="login" class="screen">
+  <div class="box">
+    <h1 class="glow">Chat Galaxy</h1>
+    <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
+    <input type="text" id="nama" placeholder="Nama kamu...">
+    <button onclick="masuk()">Masuk</button>
   </div>
-</header><!-- KATEGORI --><section class="px-4 grid grid-cols-2 gap-3">
-  <button onclick="showPage('bot')" class="card p-4 rounded-xl text-left">
-    <p class="font-bold text-primary">SEWA BOT</p>
-    <p class="text-xs text-textsoft" id="botDesc">Luna AI MD v7.00</p>
-  </button>
-  <button onclick="showPage('panel')" class="card p-4 rounded-xl text-left">
-    <p class="font-bold text-primary">PANEL</p>
-    <p class="text-xs text-textsoft">WA / Telegram</p>
-  </button>
-</section><!-- BOT --><section id="bot" class="page active px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🤖 Paket Sewa Bot</h2>
-  <div id="botList" class="space-y-3"></div>
-</section><!-- PANEL --><section id="panel" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">⚙️ Panel Bot</h2>
-  <div id="panelList" class="space-y-3"></div>
-</section><!-- CART --><section id="cart" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🛒 Keranjang</h2>
-  <div id="cartList"></div>  <div class="card p-3 font-bold">
-    Total: <span id="totalPrice">Rp0</span>
-  </div>  <button onclick="checkoutWA()" class="btn w-full py-3 rounded-xl font-bold">
-    Order via WhatsApp
-  </button>  <button onclick="checkoutTG()" class="card w-full py-3 rounded-xl font-bold text-primary">
-    Order via Telegram
-  </button>
-</section><!-- ADMIN --><section id="admin" class="page px-4 mt-6 space-y-4">
-  <h2 class="font-bold text-lg text-primary">🚨 Dashboard Admin</h2>
-  <div class="space-y-2">
-    <input id="adminStoreName" class="border p-2 rounded w-full" placeholder="Nama Store">
-    <input id="adminBotDesc" class="border p-2 rounded w-full" placeholder="Deskripsi Bot">
-    <input id="adminWA" class="border p-2 rounded w-full" placeholder="Nomor WA">
-    <input id="adminTG" class="border p-2 rounded w-full" placeholder="Link Telegram">
+</div>
+
+<div id="dashboard" class="screen hidden">
+  <div class="header">
+    <h2>Daftar Room</h2>
+    <button onclick="logout()">Logout</button>
   </div>
-  <div id="adminProductList" class="space-y-2"></div>
-</section><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script><script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
-    authDomain: "saurusproject-6974b.firebaseapp.com",
-    databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "saurusproject-6974b",
-    storageBucket: "saurusproject-6974b.firebasestorage.app",
-    messagingSenderId: "519472343742",
-    appId: "1:519472343742:android:59523cb9e738c479980cef"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-</script><script>
-const botList = document.getElementById('botList')
-const panelList = document.getElementById('panelList')
-const cartList = document.getElementById('cartList')
-const adminProductList = document.getElementById('adminProductList')
-const cartCount = document.getElementById('cartCount')
-const totalPrice = document.getElementById('totalPrice')
+  <input type="text" id="cari" placeholder="Cari nama room..." oninput="cariRoom()">
+  <button onclick="tampilBuat()">+ Buat Room Baru</button>
+  <div id="daftar-room"></div>
+</div>
 
-let storeName = document.getElementById('storeName')
-let botDesc = document.getElementById('botDesc')
-let waNumber = '62895393336779'
-let tgLink = 'https://t.me/lordsaurus'
-let cart = []
+<div id="form-buat" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:10;">
+  <div class="box" style="max-width:400px;">
+    <h3>Buat Room Baru</h3>
+    <input type="text" id="nama-room" placeholder="Nama Room">
+    <input type="password" id="pw-room" placeholder="Password (opsional)">
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button onclick="buatRoom()">Buat</button>
+      <button onclick="document.getElementById('form-buat').style.display='none'">Batal</button>
+    </div>
+  </div>
+</div>
 
-// Produk kosong, bisa ditambah/edit/delete di admin
-let products = []
+<div id="chat" class="screen hidden">
+  <div class="header">
+    <button onclick="kembali()">←</button>
+    <h2 id="nama-room-saatini">Room</h2>
+  </div>
+  <div id="pesan-container"></div>
+  <div class="input-area">
+    <input type="text" id="input-pesan" placeholder="Ketik pesan...">
+    <button id="kirim">➤</button>
+    <label class="attach">📷 <input type="file" id="upload-gambar" accept="image/*" hidden></label>
+  </div>
+</div>
 
-function render(){
-  botList.innerHTML = ''
-  panelList.innerHTML = ''
-  cartList.innerHTML = ''
-  adminProductList.innerHTML = ''
+<script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBer_DF3-zAyH2rmnMpzilUiE5BYTb4In0",
+  authDomain: "saurusproject-6974b.firebaseapp.com",
+  databaseURL: "https://saurusproject-6974b-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "saurusproject-6974b",
+  storageBucket: "saurusproject-6974b.appspot.com",
+  messagingSenderId: "519472343742",
+  appId: "1:519472343742:web:xxxxxxxxxxxxxxxx"
+};
 
-  products.forEach(p => {
-    // BOT
-    if(p.category==='bot'){
-      const div = document.createElement('div')
-      div.className='card p-3 flex justify-between items-center rounded-xl'
-      div.innerHTML = `<div><p class='font-bold text-primary'>${p.name}</p><p class='text-xs text-textsoft'>Rp${p.price}</p></div><button onclick='addCart(${p.id})' class='btn py-1 px-3 rounded'>Add</button>`
-      botList.appendChild(div)
-    }
-    // PANEL
-    if(p.category==='panel'){
-      const div = document.createElement('div')
-      div.className='card p-3 flex justify-between items-center rounded-xl'
-      div.innerHTML = `<div><p class='font-bold text-primary'>${p.name}</p><p class='text-xs text-textsoft'>Rp${p.price}</p></div><button onclick='addCart(${p.id})' class='btn py-1 px-3 rounded'>Add</button>`
-      panelList.appendChild(div)
-    }
-    // ADMIN
-    const adminDiv = document.createElement('div')
-    adminDiv.className='flex gap-2'
-    adminDiv.innerHTML=`<input value='${p.name}' data-id='${p.id}' class='border p-1 rounded w-full'><input value='${p.price}' data-id='${p.id}' class='border p-1 rounded w-20'><select data-id='${p.id}'><option value='bot' ${p.category==='bot'?'selected':''}>Bot</option><option value='panel' ${p.category==='panel'?'selected':''}>Panel</option></select><button onclick='deleteProduct(${p.id})' class='btn px-2'>Del</button>`
-    adminProductList.appendChild(adminDiv)
-  })
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const storage = firebase.storage();
 
-  updateCart()
+let namaUser = '';
+let roomSaatIni = null;
+let currentListener = null;
+
+function masuk() {
+  namaUser = document.getElementById('nama').value.trim();
+  if (!namaUser) return alert('Nama wajib diisi!');
+
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  tampilDaftarRoom();
 }
 
-function addCart(id){
-  const p = products.find(x=>x.id===id)
-  if(p){cart.push(p);updateCart()}
+function logout() {
+  namaUser = '';
+  roomSaatIni = null;
+  if (currentListener) currentListener.off();
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('chat').classList.add('hidden');
+  document.getElementById('login').classList.remove('hidden');
+  document.getElementById('nama').value = '';
 }
 
-function updateCart(){
-  cartList.innerHTML=''
-  let total=0
-  cart.forEach((p,i)=>{
-    const div = document.createElement('div')
-    div.className='card p-2 flex justify-between rounded-xl'
-    div.innerHTML=`<p>${p.name}</p><p>Rp${p.price}</p>`
-    cartList.appendChild(div)
-    total+=p.price
-  })
-  cartCount.innerText=cart.length
-  totalPrice.innerText=`Rp${total}`
+function tampilDaftarRoom(kata = '') {
+  db.ref('rooms').once('value').then(snapshot => {
+    const list = document.getElementById('daftar-room');
+    list.innerHTML = '';
+    const rooms = snapshot.val() || {};
+
+    Object.keys(rooms).forEach(id => {
+      const r = rooms[id];
+      if (kata && !r.nama.toLowerCase().includes(kata.toLowerCase())) return;
+
+      const div = document.createElement('div');
+      div.className = 'room-item';
+      div.innerHTML = `<strong>${r.nama}</strong>`;
+      div.onclick = () => gabungRoom(id, r.password);
+      list.appendChild(div);
+    });
+  });
 }
 
-function checkoutWA(){
-  const msg = encodeURIComponent(cart.map(c=>`${c.name} Rp${c.price}`).join('\n')+`\nTotal: ${totalPrice.innerText}`)
-  window.open(`https://wa.me/${waNumber}?text=${msg}`)
+function cariRoom() {
+  tampilDaftarRoom(document.getElementById('cari').value);
 }
 
-function checkoutTG(){
-  const msg = encodeURIComponent(cart.map(c=>`${c.name} Rp${c.price}`).join('\n')+`\nTotal: ${totalPrice.innerText}`)
-  window.open(`${tgLink}?text=${msg}`)
+function tampilBuat() {
+  document.getElementById('form-buat').style.display = 'flex';
 }
 
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
-  document.getElementById(id).classList.add('active')
+function buatRoom() {
+  const nama = document.getElementById('nama-room').value.trim();
+  const pw = document.getElementById('pw-room').value;
+
+  if (!nama) return alert('Nama room wajib!');
+
+  const id = db.ref('rooms').push().key;
+  db.ref('rooms/' + id).set({
+    nama,
+    password: pw || null,
+    dibuat: firebase.database.ServerValue.TIMESTAMP
+  });
+
+  document.getElementById('form-buat').style.display = 'none';
+  tampilDaftarRoom();
 }
 
-function openAdmin(){
-  showPage('admin')
+function gabungRoom(id, pw) {
+  if (pw) {
+    const input = prompt('Masukkan password:');
+    if (input !== pw) return alert('Password salah!');
+  }
+
+  document.getElementById('pesan-container').innerHTML = '';
+  if (currentListener) currentListener.off();
+
+  roomSaatIni = id;
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('chat').classList.remove('hidden');
+  document.getElementById('nama-room-saatini').textContent = 'Room: ' + id;
+
+  const ref = db.ref('rooms/' + id + '/pesan');
+  currentListener = ref;
+
+  ref.on('child_added', snapshot => {
+    tambahPesan(snapshot.val());
+  });
 }
 
-function deleteProduct(id){
-  products=products.filter(p=>p.id!==id)
-  render()
+function kembali() {
+  roomSaatIni = null;
+  if (currentListener) currentListener.off();
+  document.getElementById('chat').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  tampilDaftarRoom();
 }
 
-// Admin Inputs
-document.getElementById('adminStoreName').oninput=e=>storeName.innerText=e.target.value
-document.getElementById('adminBotDesc').oninput=e=>botDesc.innerText=e.target.value
-document.getElementById('adminWA').oninput=e=>waNumber=e.target.value
-document.getElementById('adminTG').oninput=e=>tgLink=e.target.value
+function tambahPesan(msg) {
+  const div = document.createElement('div');
+  div.className = `pesan ${msg.pengirim === namaUser ? 'kirim' : 'terima'}`;
 
-render()
-</script></body>
+  let pengirim = msg.pengirim;
+  if (msg.pengirim === 'Owner') pengirim += ' <span style="background:gold;color:black;padding:2px 8px;border-radius:12px;font-size:0.9rem;">OWNER</span>';
+
+  let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
+  
+  if (msg.tipe === 'teks') isi += msg.isi;
+  else if (msg.tipe === 'gambar') isi += `<img src="${msg.isi}" alt="Gambar">`;
+  
+  div.innerHTML = isi;
+  document.getElementById('pesan-container').appendChild(div);
+  document.getElementById('pesan-container').scrollTop = document.getElementById('pesan-container').scrollHeight;
+}
+
+// Kirim teks
+document.getElementById('kirim').onclick = () => {
+  const teks = document.getElementById('input-pesan').value.trim();
+  if (!teks) return;
+  db.ref('rooms/' + roomSaatIni + '/pesan').push({
+    pengirim: namaUser,
+    tipe: 'teks',
+    isi: teks,
+    waktu: firebase.database.ServerValue.TIMESTAMP
+  });
+  document.getElementById('input-pesan').value = '';
+};
+
+document.getElementById('input-pesan').onkeypress = e => {
+  if (e.key === 'Enter') document.getElementById('kirim').click();
+};
+
+// Kirim foto (gambar)
+document.getElementById('upload-gambar').onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const ref = storage.ref('gambar/' + Date.now() + '_' + file.name);
+  ref.put(file).then(() => ref.getDownloadURL()).then(url => {
+    db.ref('rooms/' + roomSaatIni + '/pesan').push({
+      pengirim: namaUser,
+      tipe: 'gambar',
+      isi: url,
+      waktu: firebase.database.ServerValue.TIMESTAMP
+    });
+  }).catch(err => alert('Gagal upload foto: ' + err.message));
+};
+</script>
+</body>
 </html>
