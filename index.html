@@ -68,9 +68,7 @@
     .pesan.terima { background: rgba(255,255,255,0.15); align-self: flex-start; }
     .pesan .pengirim { font-size: 0.95rem; opacity: 0.8; display: block; margin-bottom: 4px; }
     .pesan img { max-width: 100%; border-radius: 12px; margin-top: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-    .owner-badge { background: var(--gold); color: black; padding: 2px 8px; border-radius: 12px; font-size: 0.9rem; margin-left: 8px; box-shadow: 0 0 10px var(--gold); }
-    .pesan-tools { position: absolute; top: 10px; right: 10px; display: flex; gap: 8px; }
-    .tool-btn { background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+    .owner-badge { background: var(--gold); color: black; padding: 4px 10px; border-radius: 12px; font-size: 0.9rem; margin-left: 8px; box-shadow: 0 0 10px var(--gold); font-weight: bold; }
 
     .input-area { background: rgba(0,0,0,0.5); padding: 12px; display: flex; gap: 12px; position: sticky; bottom: 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }
     #input-pesan { flex: 1; border-radius: 30px; background: rgba(255,255,255,0.1); color: white; padding: 14px; border: none; font-size: 1.1rem; }
@@ -78,8 +76,8 @@
     #kirim:hover, .attach:hover { transform: scale(1.1); box-shadow: 0 0 20px var(--light-purple); }
     .attach { background: var(--light-purple); display: grid; place-items: center; }
 
-    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 10; }
-    .modal.active { display: flex; }
+    .pesan-tools { position: absolute; top: 8px; right: 8px; display: flex; gap: 8px; }
+    .tool-btn { background: rgba(0,0,0,0.5); padding: 4px 8px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; color: white; }
   </style>
 </head>
 
@@ -89,7 +87,7 @@
   <div class="box">
     <h1>Saurus Galaxy Chat</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
-    <input type="text" id="nama" placeholder="Nama kamu...">
+    <input type="text" id="nama" placeholder="Nama kamu... (contoh: {khusus:saurus})">
     <button onclick="masuk()">Masuk</button>
   </div>
 </div>
@@ -104,14 +102,14 @@
   <div id="daftar-room"></div>
 </div>
 
-<div id="form-buat" class="modal">
-  <div class="box">
+<div id="form-buat" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:10;">
+  <div class="box" style="max-width:400px;">
     <h3>Buat Room Baru</h3>
     <input type="text" id="nama-room" placeholder="Nama Room">
     <input type="password" id="pw-room" placeholder="Password (opsional)">
     <div style="display:flex;gap:12px;margin-top:20px;">
       <button onclick="buatRoom()">Buat</button>
-      <button onclick="document.getElementById('form-buat').classList.remove('active')">Batal</button>
+      <button onclick="document.getElementById('form-buat').style.display='none'">Batal</button>
     </div>
   </div>
 </div>
@@ -126,18 +124,6 @@
     <input type="text" id="input-pesan" placeholder="Ketik pesan...">
     <button id="kirim">➤</button>
     <label class="attach">📷 <input type="file" id="upload-gambar" accept="image/*" hidden></label>
-  </div>
-</div>
-
-<div id="ban-modal" class="modal">
-  <div class="box">
-    <h3>Manage Banned Users</h3>
-    <input type="text" id="ban-name" placeholder="Nama user untuk ban/unban">
-    <div style="display:flex;gap:12px;margin-top:20px;">
-      <button onclick="banUser()">Ban</button>
-      <button onclick="unbanUser()">Unban</button>
-      <button onclick="document.getElementById('ban-modal').classList.remove('active')">Batal</button>
-    </div>
   </div>
 </div>
 
@@ -161,16 +147,23 @@ let namaUser = '';
 let isOwner = false;
 let roomSaatIni = null;
 let currentListener = null;
-let deletedPesan = new Set(); // Simpan ID pesan yang dihapus diri sendiri
+let deletedPesan = new Set();
 
 function masuk() {
-  namaUser = document.getElementById('nama').value.trim();
-  if (!namaUser) return alert('Nama wajib diisi!');
+  let inputNama = document.getElementById('nama').value.trim();
+  if (!inputNama) return alert('Nama wajib diisi!');
+
+  // Cek owner mode
+  isOwner = inputNama.startsWith('{khusus:') && inputNama.endsWith('}');
+  if (isOwner) {
+    namaUser = inputNama.substring(9, inputNama.length - 1); // ambil nama di tengah {khusus:nama}
+  } else {
+    namaUser = inputNama;
+  }
 
   // Cek kalau nama banned
   db.ref('bannedUsers/' + namaUser).once('value').then(snap => {
     if (snap.exists()) return alert('Nama ini dibanned! Gunakan nama lain.');
-    isOwner = namaUser === 'Owner'; // Owner mode kalau nama 'Owner'
     document.getElementById('login').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     tampilDaftarRoom();
@@ -200,7 +193,6 @@ function tampilDaftarRoom(kata = '') {
       const div = document.createElement('div');
       div.className = 'room-item';
       div.innerHTML = `<strong>${r.nama}</strong>`;
-
       div.onclick = () => gabungRoom(id, r.password);
 
       if (isOwner) {
@@ -219,8 +211,14 @@ function tampilDaftarRoom(kata = '') {
         const banBtn = document.createElement('button');
         banBtn.className = 'owner-btn';
         banBtn.innerText = 'Ban User';
-        banBtn.onclick = e => { e.stopPropagation(); document.getElementById('ban-modal').classList.add('active'); };
+        banBtn.onclick = e => { e.stopPropagation(); const banName = prompt('Nama user untuk ban:'); if (banName) db.ref('bannedUsers/' + banName).set(true); };
         div.appendChild(banBtn);
+
+        const unbanBtn = document.createElement('button');
+        unbanBtn.className = 'owner-btn';
+        unbanBtn.innerText = 'Unban User';
+        unbanBtn.onclick = e => { e.stopPropagation(); const unbanName = prompt('Nama user untuk unban:'); if (unbanName) db.ref('bannedUsers/' + unbanName).remove(); };
+        div.appendChild(unbanBtn);
       }
 
       list.appendChild(div);
@@ -233,7 +231,7 @@ function cariRoom() {
 }
 
 function tampilBuat() {
-  document.getElementById('form-buat').classList.add('active');
+  document.getElementById('form-buat').style.display = 'flex';
 }
 
 function buatRoom() {
@@ -249,7 +247,7 @@ function buatRoom() {
     dibuat: firebase.database.ServerValue.TIMESTAMP
   });
 
-  document.getElementById('form-buat').classList.remove('active');
+  document.getElementById('form-buat').style.display = 'none';
   tampilDaftarRoom();
 }
 
@@ -273,7 +271,7 @@ function gabungRoom(id, pw) {
   ref.on('child_added', snapshot => {
     const msg = snapshot.val();
     const msgId = snapshot.key;
-    if (deletedPesan.has(msgId)) return; // Lewati kalau dihapus diri sendiri
+    if (deletedPesan.has(msgId)) return;
     tambahPesan(msg, msgId);
   });
 }
@@ -292,9 +290,9 @@ function tambahPesan(msg, msgId) {
   div.dataset.id = msgId;
 
   let pengirim = msg.pengirim;
-  if (msg.pengirim.toLowerCase().includes('{khusus:nama}')) {
-    pengirim = pengirim.replace(/\{khusus:nama\}/i, '').trim();
-    pengirim += ' • <span class="owner-badge" style="background: var(--gold); color: black; padding: 2px 8px; border-radius: 12px; font-size: 0.9rem; box-shadow: 0 0 10px var(--gold);">OWNER👑</span>';
+  if (msg.pengirim.startsWith('{khusus:') && msg.pengirim.endsWith('}')) {
+    pengirim = msg.pengirim.substring(9, msg.pengirim.length - 1);
+    pengirim += ' • <span class="owner-badge">OWNER👑</span>';
   }
 
   let isi = `<span class="pengirim">${pengirim} • ${new Date(msg.waktu).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}</span>`;
@@ -319,23 +317,6 @@ function hapusPesanDiri(btn) {
     deletedPesan.add(msgId);
     btn.parentElement.parentElement.remove();
   }
-}
-
-// Ban user (owner)
-function banUser() {
-  const banName = document.getElementById('ban-name').value.trim();
-  if (!banName) return alert('Isi nama user!');
-  db.ref('bannedUsers/' + banName).set(true);
-  alert('User ' + banName + ' dibanned!');
-  document.getElementById('ban-modal').classList.remove('active');
-}
-
-function unbanUser() {
-  const banName = document.getElementById('ban-name').value.trim();
-  if (!banName) return alert('Isi nama user!');
-  db.ref('bannedUsers/' + banName).remove();
-  alert('User ' + banName + ' diunban!');
-  document.getElementById('ban-modal').classList.remove('active');
 }
 
 // Kirim teks
