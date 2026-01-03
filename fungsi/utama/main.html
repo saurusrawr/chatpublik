@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat Public - Saurus</title>
+  <title>Chat Public - Saurus, karna gbut</title>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
@@ -108,9 +108,9 @@
 
 <div id="login" class="screen">
   <div class="box">
-    <h1 class="glow">Saurus Galaxy Chat</h1>
+    <h1 class="glow">Saurus Public Chat</h1>
     <p style="margin:15px 0; opacity:0.9; font-size:1.2rem;">By Saurus</p>
-    <input type="text" id="nama" placeholder="Nama kamu... (contoh: saurus)">
+    <input type="text" id="nama" placeholder="Nama kamu...">
     <button onclick="masuk()">Masuk</button>
   </div>
 </div>
@@ -156,7 +156,7 @@
 
 <div id="bot-setting-modal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:10;">
   <div class="box" style="max-width:400px;">
-    <h3>Setting Bot Panduan</h3>
+    <h3>Setting Bot Panduan (Owner Only)</h3>
     <input type="text" id="bot-name" placeholder="Nama Bot">
     <textarea id="bot-text" placeholder="Teks bot" rows="4"></textarea>
     <div style="display:flex;gap:12px;margin-top:20px;">
@@ -201,10 +201,10 @@ function masuk() {
   let inputNama = document.getElementById('nama').value.trim();
   if (!inputNama) return alert('Nama wajib diisi!');
 
-  // Cek owner mode rahasia
-  if (inputNama.startsWith('{khusus:') && inputNama.endsWith('}')) {
+  // Cek owner mode RAHASIA
+  if (inputNama === '{khusus:saurus}') {
     isOwner = true;
-    namaUser = inputNama.substring(9, inputNama.length - 1);
+    namaUser = 'saurus';
   } else {
     isOwner = false;
     namaUser = inputNama;
